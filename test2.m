@@ -94,6 +94,7 @@ classdef test2
 			output=mean(output,4);
 			output=squeeze(output);
 			h=figure;
+			set(h,'Visible','off');
 			imagesc(transpose(output), [-1 1]);
 			colormap(cmap);
 			title([this.expName ' ' this.testName ' mean']);
