@@ -55,6 +55,19 @@ function createImages()
 					path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
 					mkdir(path);
 					saveas(h, [path x{i} '.' figFormat], figFormat);
+				elseif csd.isCSDMapping()
+					%Create figure (CSD)
+					h=figure;
+					set(h,'Visible','off');
+					imagesc(csd.data);
+					ylabel('Channels')
+					xlabel('Time (ms)')
+					colorbar;
+					%Save figure
+					path=[Const.RESULT_DIRECTORY pathname('CSD Mapping', expName)];
+					mkdir(path);
+					saveas(h, [path x{i} '.fig'], 'fig');
+					saveas(h, [path x{i} '.png'], 'png');
 				else
 					disp('Not grating. Skipping.');
 				end

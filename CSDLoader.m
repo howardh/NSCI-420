@@ -5,7 +5,7 @@ classdef CSDLoader
         %range = [-45 45]; 
         %window=(1000:1200); 
         trials = []; %if empty it just computes the mean
-        badChannels=[23];
+        %badChannels=[23];
     end
     methods
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,7 +55,7 @@ classdef CSDLoader
             try
                 for i = 1:length(this.conditions)
                     if isempty(this.trials)
-                        M.DataG.(groupName).DOA{(this.conditions(i))}.BadChannels = this.badChannels;
+                        M.DataG.(groupName).DOA{(this.conditions(i))}.BadChannels = Const.BAD_CHANNELS(this.expName,testName);
                         M.DataG.(groupName).DOA{this.conditions(i)}.LoadFlag.Data = true;
                         M.DataG.(groupName).DOA{this.conditions(i)}.ComputeFlag.TrialMean = true;
                         M.DataG.(groupName).DOA{this.conditions(i)}.ComputeFlag.CSD = true;

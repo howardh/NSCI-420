@@ -1,18 +1,14 @@
 %Class containing constants used in the scripts
-%TODO: A list of all experiment names
-%TODO: A list of all test names within each experiment (Maybe a map containing them all?)
-%	key = experiment (string)
-%	value = tests (vector of strings)
 classdef Const
 	properties (Constant)
 		DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
 		FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
 		RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
 
-		%TODO
+		%TODO: A list of all experiment names
 		ALL_EXPERIMENTS = {'12mv1211'};
 
-		MEOW = Const.DATA_DIRECTORY;
+		MEOW = Const.DATA_DIRECTORY; %Not used anywhere. Kept for reference purposes.
 	end
 	methods
 		function this=Const()
@@ -21,9 +17,9 @@ classdef Const
 	methods (Static)
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
-			ret={'065'};
+			%ret={'065'};
 			%ret={'137'};
-			return;
+			%return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
 				ret={'024', '025', '033', '034', '035', '038', '042', '043', '044', '045', ... %Insertion 1
@@ -34,6 +30,20 @@ classdef Const
 				return;
 			end
 			ret={'000'};
+		end
+
+		function ret=BAD_CHANNELS(expName, testName)
+			switch(expName)
+				case '12mv1211'
+					switch (testName)
+						case '044'
+							ret=[23 25 27];
+						otherwise
+							ret=[23];
+					end
+				otherwise
+					ret=[];
+			end
 		end
 	end
 end
