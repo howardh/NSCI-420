@@ -47,7 +47,7 @@ classdef test2
 			cdforce(dir);
 
 			%If we haven't already done the analysis, then do them
-			%if (~exist('ret.mat','file'))
+			if (~exist('ret.mat','file'))
 				disp('compute stuff');
 				%Load the data
 				loader=CSDLoader;
@@ -62,10 +62,10 @@ classdef test2
 				csd.channelWindow=this.channelWindow;
 				%Analyze the data
 				ret=this.analyze(csd,this.timeSubdiv);
-			%else
-			%	disp(['load stuff ' pwd]);
-			%	load('ret.mat');
-			%end
+			else
+				disp(['load stuff ' pwd]);
+				load('ret.mat');
+			end
 
 			%Load the color map
 			load('colormap.mat');
