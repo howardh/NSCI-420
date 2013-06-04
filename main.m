@@ -19,6 +19,7 @@ end
 %	Data to images
 
 function createTuningCurveImages()
+	figFormat='png';
 	loader=CSDLoader;
 	for e=1:length(Const.ALL_EXPERIMENTS);
 		expName=Const.ALL_EXPERIMENTS{e};
@@ -29,12 +30,19 @@ function createTuningCurveImages()
 			try
 				csd=loader.load(x{i});
 				if csd.isGrating()
+					%Create figure
 					h=figure;
-					imagesc(tuningCurve);
+					set(h,'Visible','off');
+					imagesc(csd.tuningCurve);
 					zlabel('Spike Rate in spikes/sec')
 					ylabel('Channels')
 					xlabel('Condition')
 					colorbar;
+
+					%Save figure
+					path=[Const.RESULT_DIRECTORY pathname('Tuning Curves', expName)];
+					mkdir(path);
+					saveas(h, [path x{i} '.' figFormat], figFormat);
 				else
 					disp('Not grating. Skipping.');
 				end
