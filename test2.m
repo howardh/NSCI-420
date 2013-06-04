@@ -9,19 +9,28 @@ classdef test2
 		timeSubdiv=20; %Size of subdivisions of blocks of data to be analyzed
 
 		figFormat='png';
+		
+		alpha=0.000000001;
 	end
 	methods
 		%Runs everything
 		function run(this)
 			divs=[10,20,40,50,100,200];
+			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
 				testNames=Const.ALL_TESTS(this.expName);
+				%Every test within that experiment
 				for tn=1:length(testNames)
 					this.testName = testNames{tn};
+					%Every possible time subdivision
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
-   						this.runOnce();
+						%Every alpha value
+						for a=2:10
+							this.alpha = 10^-a;
+   							this.runOnce();
+						end
 					end
 				end
 			end
@@ -34,7 +43,7 @@ classdef test2
 		%	x axis = orientation (each represents one of the 8 figures above, averaged across orientations)
 		%	y axis = channel
 		function ret=runOnce(this)
-			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName, num2str(this.timeSubdiv)) ];
+			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName, num2str(this.timeSubdiv), num2str(-log10(this.alpha))) ];
 			cdforce(dir);
 
 			%If we haven't already done the analysis, then do them
@@ -141,11 +150,10 @@ classdef test2
 		function ret=test(this,dist1,dist2)
 			mean1=mean(dist1);
 			mean2=mean(dist2);
-			alpha=0.000000001;
 			if (mean1 > mean2)
-				ret=ttest2(dist1,dist2,alpha,'right');
+				ret=ttest2(dist1,dist2,this.alpha,'right');
 			else
-				ret=-ttest2(dist1,dist2,alpha,'left');
+				ret=-ttest2(dist1,dist2,this.alpha,'left');
 			end
 		end
 	end

@@ -12,7 +12,7 @@ classdef CSDLoader
 		%Loads everything
         function ret=load(this,testName)
 			%If the file already exists, then load it
-			fileName=[Const.DATA_DIRECTORY testName '.mat'];
+			fileName=[Const.DATA_DIRECTORY pathname(this.expName) testName '.mat'];
 			if exist(fileName, 'file')
 				disp(['File ' testName ' already exists. Loading from file.']);
 				x=load(fileName);
@@ -24,6 +24,7 @@ classdef CSDLoader
 			disp(['File ' testName ' does not exist. Creating file.']);
             ret=CSDData;
             ret.testName=testName;
+			ret.expName=this.expName;
             ret.data=this.loadData(testName);
             ret.stimulus=this.loadStimulus(testName);
             ret.stimulusObject=this.loadStimulusObject(testName);
@@ -132,7 +133,7 @@ classdef CSDLoader
 				
 			for i = 1:length(Conditions)
 				Cond = Conditions(i);
-				RateMat(:,i) =  mean(M.DataG.(GroupName).DOA{Cond}.StimSpikeRate(ShowChannel, Trials),2);
+				RateMat(:,i) = mean(M.DataG.(GroupName).DOA{Cond}.StimSpikeRate(ShowChannel, Trials),2);
 			end
 
 			ret=RateMat;

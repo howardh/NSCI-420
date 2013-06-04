@@ -1,14 +1,7 @@
 function ret=main()
 	addpath '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
 
-	%loader=CSDLoader;
-	%csd=loader.load('065');
-	%csd.data=csd.trim();
-	%csd.data=csd.mergeConditions();
-	%dist1=csd.data(4,1:20,:,2);
-	%dist2=csd.data(4,1:20,:,6);
-
-	%scatter(dist1(:),zeros(1,length(dist1(:))));
+	%convertAllData();
 
 	x=test2;
 	x.run;
@@ -82,35 +75,20 @@ end
 %	Data conversion (To my own format)
 
 function convertAllData()
-	x=ls('\\132.216.58.64\f\Martin\12mv1211\Electro\Analyzed Data');
-
-	files=size(x);
-	files=files(1);
-	for i=3:files
-		disp(['Converting test ' x(i,1:3)]);
-		try
-			convertData('12mv1211',x(i,1:3));
-		catch exception
-			disp(' some error occurred');
-			disp(getReport(exception));
-			%Meh. No biggie.
+	for e=1:length(Const.ALL_EXPERIMENTS);
+		expName=Const.ALL_EXPERIMENTS{e};
+		x=Const.ALL_TESTS(expName);
+		for i=3:length(x)
+			disp(['Converting test ' x{i}]);
+			try
+				convertData(expName,x{i});
+			catch exception
+				disp(' some error occurred');
+				disp(getReport(exception));
+				%Meh. No biggie.
+			end
 		end
 	end
-
-	%x={'065', '143', '144', '145'};
-	%for i=1:length(x)
-	%	disp(['Converting test ' x{i}]);
-	%	try
-	%		convertData('12mv1211',x{i});
-	%	catch exception
-	%		disp(' some error occurred');
-	%		disp(getReport(exception));
-	%		%Meh. No biggie.
-	%	end
-	%end
-
-	%convertData('12mv1211','065');
-	%convertData('12mv1211','145');
 end
 
 function ret=convertData(experiment, testName)
@@ -121,12 +99,6 @@ function ret=convertData(experiment, testName)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-function ret=foo()
-    loader=CSDLoader;
-    csd=loader.load('065');
-    ret=CSDStatAnalysis(csd);
-end
 
 function ret=bar()
     data={'143', '145'};
@@ -150,5 +122,10 @@ end
 
 function ret=runAll()
 	convertAllData();
-	test1();
+
+	x=test1;
+	x.run;
+
+	x=test2;
+	x.run;
 end

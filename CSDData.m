@@ -1,23 +1,24 @@
 classdef CSDData
     properties
+		expName
         testName
-        data
-		tuningCurve
+
+        data		%CSD data
+		tuningCurve %Tuning curve data
+
         stimulus
         prefOrientation
         stimulusObject
 
-		%timeWindow=[1050:1150];
 		timeWindow=[1000:1200];
 		channelWindow=[1:32];
-
-        %directory='C:\Users\labuser 2\Documents\MATLAB\CSDData\'
-		directory=Const.DATA_DIRECTORY;
     end
     methods
         function ret=save(this)
-			%TODO: Should store the experiment too
-            save([this.directory this.testName '.mat'], 'this');
+			%Make sure the directory exists
+			mkdir([Const.DATA_DIRECTORY pathname(this.expName)]);
+			%Save the data
+            save([Const.DATA_DIRECTORY pathname(this.expName) this.testName '.mat'], 'this');
         end
 
 		%Discard everything except the data over the defined time window
