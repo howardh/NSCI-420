@@ -16,68 +16,6 @@ function ret=run(scriptName)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	Data analysis
-
-%TODO: Documentation
-%Produces 8 images
-%	x axis = orientation
-%	y axis = channel
-%Mean figure
-%	x axis = orientation (each represents one of the 8 figures above, averaged across orientations)
-%	y axis = channel
-function ret=test1()
-	cd([Const.RESULT_DIRECTORY 'test1']);
-
-	%If we haven't already done the analysis, then do them
-	if (~exist('ret.mat','file'))
-		%Load the data
-		loader=CSDLoader;
-		csd=loader.load('065');
-		%Analyze the data
-		ret=CSDStatAnalysis(csd,10);
-		save('ret.mat','ret');
-	else
-		load('ret.mat');
-	end
-
-	%Produce 8 figures, one for each orientation
-	for x=1:8
-		%Format the data for the figures
-		output=mean(ret,4);
-		output=squeeze(output(x,:,:,:));
-		for i=1:length(output(:))
-			if (output(i) ~= 1)
-				output(i)=0;
-			end
-		end
-		output=transpose(output);
-
-		%Create and save the figures
-		h=figure;
-		set(h,'Visible','off');
-		imagesc(output);
-		title(['065\_' num2str(x)]);
-		xlabel('Orientation');
-		ylabel('Channel');
-		colorbar;
-		%saveas(h,[num2str(x) '.png'], 'png');
-		saveas(h,[num2str(x) '.fig'], 'fig');
-	end
-
-	%Average over orientations
-	output=mean(ret,2);
-	output=mean(output,4);
-	output=squeeze(output);
-	h=figure;
-	imagesc(transpose(output));
-	title(['065 mean']);
-	xlabel('Orientation');
-	ylabel('Channel');
-	colorbar;
-	saveas(h,['mean.png'], 'png');
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	Data conversion (To my own format)
 
 function convertAllData()
