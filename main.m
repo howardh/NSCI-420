@@ -3,10 +3,16 @@ function ret=main()
 
 	%convertAllData();
 
-	x=test2;
-	x.run;
+	run('test2');
+	%x=test2;
+	%x.run;
 
 	cd '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
+end
+
+function ret=run(scriptName)
+	x=eval([scriptName]);
+	x.run();
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -122,10 +128,6 @@ end
 
 function ret=runAll()
 	convertAllData();
-
-	x=test1;
-	x.run;
-
-	x=test2;
-	x.run;
+	run('test1');
+	run('test2');
 end
