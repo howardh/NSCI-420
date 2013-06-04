@@ -3,7 +3,7 @@ function ret=main()
 
 	%convertAllData();
 
-	createTuningCurveImages();
+	createImages();
 
 	%run('test2');
 
@@ -18,7 +18,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	Data to images
 
-function createTuningCurveImages()
+function createImages()
 	figFormat='png';
 	loader=CSDLoader;
 	for e=1:length(Const.ALL_EXPERIMENTS);
@@ -30,7 +30,7 @@ function createTuningCurveImages()
 			try
 				csd=loader.load(x{i});
 				if csd.isGrating()
-					%Create figure
+					%Create figure (Tuning curve)
 					h=figure;
 					set(h,'Visible','off');
 					imagesc(csd.tuningCurve);
@@ -38,9 +38,21 @@ function createTuningCurveImages()
 					ylabel('Channels')
 					xlabel('Condition')
 					colorbar;
-
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('Tuning Curves', expName)];
+					mkdir(path);
+					saveas(h, [path x{i} '.' figFormat], figFormat);
+
+					%Create figure (CSD)
+					h=figure;
+					set(h,'Visible','off');
+					output=mean(mean(csd.data(:,[1000:1200],:,:),3),4);
+					imagesc(output);
+					ylabel('Channels')
+					xlabel('Time (ms)')
+					colorbar;
+					%Save figure
+					path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
 					mkdir(path);
 					saveas(h, [path x{i} '.' figFormat], figFormat);
 				else
@@ -53,9 +65,6 @@ function createTuningCurveImages()
 			end
 		end
 	end
-end
-
-function createGratingCSDImages()
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,6 +119,7 @@ end
 
 function ret=runAll()
 	convertAllData();
+	createImages();
 	run('test1');
 	run('test2');
 end
