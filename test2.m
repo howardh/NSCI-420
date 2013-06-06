@@ -47,7 +47,7 @@ classdef test2
 			cdforce(dir);
 
 			%If we haven't already done the analysis, then do them
-			if (~exist('ret.mat','file'))
+			if (~exist('./ret.mat','file'))
 				disp('compute stuff');
 				%Load the data
 				loader=CSDLoader;
