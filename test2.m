@@ -47,7 +47,7 @@ classdef test2
 			cdforce(dir);
 
 			%If we haven't already done the analysis, then do them
-			if (~exist('./ret.mat','file'))
+			if (~exist('../ret.mat','file'))
 				disp('compute stuff');
 				%Load the data
 				loader=CSDLoader;
@@ -62,10 +62,17 @@ classdef test2
 				csd.channelWindow=this.channelWindow;
 				%Analyze the data
 				ret=this.analyze(csd,this.timeSubdiv);
+				%Save the analyzed data
+				save('../ret.mat','ret');
 			else
-				disp(['load stuff ' pwd]);
-				load('ret.mat');
+				disp(['Analysis already done. Loading results from file.']);
+				load('../ret.mat');
 			end
+
+			%Convert the p values into h (0 if hypothesis is rejected, 1 otherwise)
+			ret(abs(ret) > this.alpha) = 0;
+			ret(abs(ret) < this.alpha & ret > 0) = 1;
+			ret(abs(ret) < this.alpha & ret < 0) = -1;
 
 			%Load the color map
 			load('colormap.mat');
@@ -152,9 +159,13 @@ classdef test2
 			mean1=mean(dist1);
 			mean2=mean(dist2);
 			if (mean1 > mean2)
-				ret=ttest2(dist1,dist2,this.alpha,'right');
+				%ret=ttest2(dist1,dist2,this.alpha,'right');
+				[h,p]=ttest2(dist1,dist2,this.alpha,'right');
+				ret=p;
 			else
-				ret=-ttest2(dist1,dist2,this.alpha,'left');
+				%ret=-ttest2(dist1,dist2,this.alpha,'left');
+				[h,p]=ttest2(dist1,dist2,this.alpha,'left');
+				ret=-p;
 			end
 		end
 	end
