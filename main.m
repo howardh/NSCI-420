@@ -34,9 +34,10 @@ function createImages()
 					h=figure;
 					set(h,'Visible','off');
 					imagesc(csd.tuningCurve);
-					zlabel('Spike Rate in spikes/sec')
-					ylabel('Channels')
-					xlabel('Condition')
+					zlabel('Spike Rate in spikes/sec');
+					ylabel('Channels');
+					xlabel('Condition');
+					title(['Tuning Curve (Prefered orientation: ' num2str(csd.getPrefOrientation()) ')']);
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('Tuning Curves', expName)];
@@ -48,8 +49,8 @@ function createImages()
 					set(h,'Visible','off');
 					output=mean(mean(csd.data(:,[1000:1200],:,:),3),4);
 					imagesc(output);
-					ylabel('Channels')
-					xlabel('Time (ms)')
+					ylabel('Channels');
+					xlabel('Time (ms)');
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
@@ -60,8 +61,8 @@ function createImages()
 					h=figure;
 					set(h,'Visible','off');
 					imagesc(csd.data);
-					ylabel('Channels')
-					xlabel('Time (ms)')
+					ylabel('Channels');
+					xlabel('Time (ms)');
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('CSD Mapping', expName)];
