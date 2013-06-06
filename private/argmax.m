@@ -1,11 +1,18 @@
 function ret=argmax(matrix)
-	matrix=matrix(:);
-	ret=1;
-	for i=2:length(matrix)
-		if (matrix(i) > matrix(ret))
-			ret=i;
-		end
+	[m i] = max(matrix(:));
+	if isVector(matrix)
+		ret=i;
+	else
+		ret=ind2sub(size(matrix),i);
 	end
+
+	%matrix=matrix(:);
+	%ret=1;
+	%for i=2:length(matrix)
+	%	if (matrix(i) > matrix(ret))
+	%		ret=i;
+	%	end
+	%end
 	%ret=am(matrix);
 end
 
