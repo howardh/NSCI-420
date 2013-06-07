@@ -27,12 +27,13 @@ classdef test2
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						%for a=2:10
-						for a=0
-							%this.alpha = 10^-a;
-							this.alpha = 0;
+						for a=2:10
+							this.alpha = 10^-a;
    							this.runOnce();
 						end
+						%And plot the p values too
+						this.alpha = 0;
+   						this.runOnce();
 					end
 				end
 			end
@@ -73,7 +74,6 @@ classdef test2
 
 			%Load the color map
 			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
-			%load('colormap.mat');
 
 			%Plot p-values
 			if (this.alpha == 0)
@@ -87,7 +87,6 @@ classdef test2
 					subplot(1,2,1); %Make room for the caption
 					range=[-50 50]; %Based on a visual inspection of the results without a range
 					imagesc(transpose(output), range);
-					%colormap(interp1([1 64],[1 0 0; 1 1 1],1:64));
 					colormap(cmap);
 					title([this.expName ' ' this.testName '\_' num2str(x)]);
 					xlabel('Orientation');
