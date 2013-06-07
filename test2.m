@@ -27,8 +27,10 @@ classdef test2
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						for a=2:10
-							this.alpha = 10^-a;
+						%for a=2:10
+						for a=0
+							%this.alpha = 10^-a;
+							this.alpha = 0;
    							this.runOnce();
 						end
 					end
@@ -69,13 +71,44 @@ classdef test2
 				load('../ret.mat');
 			end
 
-			%Convert the p values into h (0 if hypothesis is rejected, 1 otherwise)
+			%Load the color map
+			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
+			%load('colormap.mat');
+
+			%Plot p-values
+			if (this.alpha == 0)
+				ret=mean(ret,4);
+				%ret(:)=real(log(ret(:)));
+				ret(:)=log(abs(ret(:))).*sign(ret(:));
+				for x=1:8
+					output=squeeze(ret(x,:,:));
+					h=figure;
+					set(h,'Visible','off');
+					subplot(1,2,1); %Make room for the caption
+					range=[-50 50]; %Based on a visual inspection of the results without a range
+					imagesc(transpose(output), range);
+					%colormap(interp1([1 64],[1 0 0; 1 1 1],1:64));
+					colormap(cmap);
+					title([this.expName ' ' this.testName '\_' num2str(x)]);
+					xlabel('Orientation');
+					ylabel('Channel');
+					zlabel('P value (log transformed)');
+					colorbar;
+					lb=[char(10) char(10)]; %Line break
+					caption=['Color represents the p-values after a log transformation' lb ...
+							 'Proximity to white = less significant difference' lb ...
+							 'Orientation ' num2str(x) ' compared to every other orientation (Including itself)' lb ...
+							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
+					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
+					saveas(h,[num2str(x) '.' this.figFormat], this.figFormat);
+				end
+				return;
+			end
+
+			%Convert the p values (ret) into h (0 if hypothesis is rejected, 1 otherwise)
 			ret(abs(ret) > this.alpha) = 0;
 			ret(abs(ret) < this.alpha & ret > 0) = 1;
 			ret(abs(ret) < this.alpha & ret < 0) = -1;
-
-			%Load the color map
-			load('colormap.mat');
 
 			%Produce 8 figures, one for each orientation
 			for x=1:8
