@@ -1,5 +1,5 @@
 %Computes the alignment with the highest average zero-lag correlation
-function ret=CSDMappingAligner2(csd1, csd2, name)
+function ret=CSDMappingAligner(csd1, csd2, name)
     %Initialize variables
     csd1.data=csd1.data([4:16],[1000:1200],:);
     size1=size(csd1.data);
@@ -7,7 +7,7 @@ function ret=CSDMappingAligner2(csd1, csd2, name)
     times=size2(2)-size1(2);
     channels=size2(1)-size1(1);
     trials=min(size1(3),size2(3));
-    csd1.data=csd1.data(:,:,[1:trials]);
+    csd1.data=csd1.data(:,:,[1:trials]); %TODO: Try averaging over the trials instead
     csd2.data=csd2.data(:,:,[1:trials]);
     tempCsd1=csd1.data(:);
 
