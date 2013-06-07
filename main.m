@@ -5,7 +5,9 @@ function ret=main()
 
 	%createImages();
 
-	run('test2');
+	%run('test2');
+
+	runAll();
 
 	cd '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
 end
