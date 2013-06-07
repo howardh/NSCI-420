@@ -31,6 +31,9 @@ classdef test2
 							this.alpha = 10^-a;
    							this.runOnce();
 						end
+						%And plot the p values too
+						this.alpha = 0;
+   						this.runOnce();
 					end
 				end
 			end
@@ -47,7 +50,7 @@ classdef test2
 			cdforce(dir);
 
 			%If we haven't already done the analysis, then do them
-			if (~exist('./ret.mat','file'))
+			if (~exist('../ret.mat','file'))
 				disp('compute stuff');
 				%Load the data
 				loader=CSDLoader;
@@ -62,13 +65,49 @@ classdef test2
 				csd.channelWindow=this.channelWindow;
 				%Analyze the data
 				ret=this.analyze(csd,this.timeSubdiv);
+				%Save the analyzed data
+				save('../ret.mat','ret');
 			else
-				disp(['load stuff ' pwd]);
-				load('ret.mat');
+				disp(['Analysis already done. Loading results from file.']);
+				load('../ret.mat');
 			end
 
 			%Load the color map
-			load('colormap.mat');
+			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
+
+			%Plot p-values
+			if (this.alpha == 0)
+				ret=mean(ret,4);
+				ret(:)=log(abs(ret(:))).*sign(ret(:));
+				for x=1:8
+					output=squeeze(ret(x,:,:));
+					h=figure;
+					set(h,'Visible','off');
+					subplot(1,2,1); %Make room for the caption
+					range=[-50 50]; %Based on a visual inspection of the results without a range
+					imagesc(transpose(output), range);
+					colormap(cmap);
+					title([this.expName ' ' this.testName '\_' num2str(x)]);
+					xlabel('Orientation');
+					ylabel('Channel');
+					zlabel('P value (log transformed)');
+					colorbar;
+					lb=[char(10) char(10)]; %Line break
+					caption=['Color represents the p-values after a log transformation' lb ...
+							 'Proximity to white = less significant difference' lb ...
+							 'Orientation ' num2str(x) ' compared to every other orientation (Including itself)' lb ...
+							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
+					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
+					saveas(h,[num2str(x) '.' this.figFormat], this.figFormat);
+				end
+				return;
+			end
+
+			%Convert the p values (ret) into h (0 if hypothesis is rejected, 1 otherwise)
+			ret(abs(ret) > this.alpha) = 0;
+			ret(:) = sign(ret(:)); %Can be 1 or -1, depending on the direction of the difference
+			%ret(abs(ret) < this.alpha & ret > 0) = 1;
+			%ret(abs(ret) < this.alpha & ret < 0) = -1;
 
 			%Produce 8 figures, one for each orientation
 			for x=1:8
@@ -152,9 +191,13 @@ classdef test2
 			mean1=mean(dist1);
 			mean2=mean(dist2);
 			if (mean1 > mean2)
-				ret=ttest2(dist1,dist2,this.alpha,'right');
+				%ret=ttest2(dist1,dist2,this.alpha,'right');
+				[h,p]=ttest2(dist1,dist2,this.alpha,'right');
+				ret=p;
 			else
-				ret=-ttest2(dist1,dist2,this.alpha,'left');
+				%ret=-ttest2(dist1,dist2,this.alpha,'left');
+				[h,p]=ttest2(dist1,dist2,this.alpha,'left');
+				ret=-p;
 			end
 		end
 	end

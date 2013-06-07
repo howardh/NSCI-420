@@ -5,7 +5,9 @@ function ret=main()
 
 	%createImages();
 
-	run('test2');
+	%run('test2');
+
+	runAll();
 
 	cd '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
 end
@@ -122,7 +124,7 @@ function ret=bar()
         csdi=loader.load(data{i});
         for j=i+1:length(data)
             csdj=loader.load(data{j});
-            ret(name)=CSDMappingAligner2(csdi,csdj,name);
+            ret(name)=CSDMappingAligner(csdi,csdj,name);
         end
     end
 end
