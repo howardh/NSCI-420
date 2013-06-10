@@ -11,8 +11,6 @@ classdef test2
 		figFormat='png';
 		
 		alpha=0.001;
-
-		tests={'ttest', 'ttest paired'}
 	end
 	methods
 		%Runs everything
@@ -193,11 +191,10 @@ classdef test2
 		function ret=test(this,dist1,dist2)
 			mean1=mean(dist1);
 			mean2=mean(dist2);
+			[h,p]=ttest(dist1,dist2,this.alpha);
 			if (mean1 > mean2)
-				[h,p]=ttest2(dist1,dist2,this.alpha,'right');
 				ret=p;
 			else
-				[h,p]=ttest2(dist1,dist2,this.alpha,'left');
 				ret=-p;
 			end
 		end
