@@ -12,12 +12,13 @@ classdef test2
 		
 		alpha=0.001;
 
-		tests={'ttest', 'kruskal-wallis'}
+		tests={'ttest', 'ttest paired'}
 	end
 	methods
 		%Runs everything
 		function run(this)
-			divs=[10,20,40,50,100,200];
+			%divs=[10,20,40,50,100,200];
+			divs=[200];
 			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
@@ -176,8 +177,8 @@ classdef test2
 						t=[1:div];
 						tCount=1;
 						while (t(end)<=sizes(2))
-							dist1 = csd.data(ch,t,:,cond1);
-							dist2 = csd.data(ch,t,:,cond2);
+							dist1 = mean(csd.data(ch,t,:,cond1),2);
+							dist2 = mean(csd.data(ch,t,:,cond2),2);
 							ret(cond1,cond2,ch,tCount) = this.test(dist1(:),dist2(:));
 							ret(cond2,cond1,ch,tCount) = -ret(cond1,cond2,ch,tCount);
 
@@ -193,11 +194,9 @@ classdef test2
 			mean1=mean(dist1);
 			mean2=mean(dist2);
 			if (mean1 > mean2)
-				%ret=ttest2(dist1,dist2,this.alpha,'right');
 				[h,p]=ttest2(dist1,dist2,this.alpha,'right');
 				ret=p;
 			else
-				%ret=-ttest2(dist1,dist2,this.alpha,'left');
 				[h,p]=ttest2(dist1,dist2,this.alpha,'left');
 				ret=-p;
 			end

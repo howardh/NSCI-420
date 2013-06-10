@@ -17,10 +17,10 @@ classdef Const
 	methods (Static)
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
-			%ret={'065'};
+			ret={'065'};
 			%ret={'044'};
 			%ret={'137'};
-			%return;
+			return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
 				%TODO: Removed 034. Don't know why it won't load.
