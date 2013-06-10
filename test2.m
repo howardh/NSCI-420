@@ -17,8 +17,8 @@ classdef test2
 	methods
 		%Runs everything
 		function run(this)
-			%divs=[10,20,40,50,100,200];
-			divs=[200];
+			divs=[10,20,40,50,100,200];
+			%divs=[200];
 			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
@@ -87,7 +87,7 @@ classdef test2
 					h=figure;
 					set(h,'Visible','off');
 					subplot(1,2,1); %Make room for the caption
-					range=[-50 50]; %Based on a visual inspection of the results without a range
+					range=[-9 9]; %Based on a visual inspection of the results without a range
 					imagesc(transpose(output), range);
 					colormap(cmap);
 					title([this.expName ' ' this.testName '\_' num2str(x)]);
