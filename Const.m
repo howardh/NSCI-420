@@ -17,13 +17,14 @@ classdef Const
 	methods (Static)
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
-			ret={'065'};
+			%ret={'065'};
 			%ret={'044'};
 			%ret={'137'};
-			return;
+			%return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
-				ret={'024', '025', '033', '034', '035', '038', '042', '043', '044', '045', ... %Insertion 1
+				%TODO: Removed 034. Don't know why it won't load.
+				ret={'024', '025', '033', '035', '038', '042', '043', '044', '045', ... %Insertion 1
 					'046', '048', '049', '050', '053', '054', ... %Insertion 2
 					'056', '057', '058', '059', '060', '061', ... %Insertion 4
 					'062', '063', '065', '066', '067', '068', ... %Insertion 5

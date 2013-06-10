@@ -10,7 +10,9 @@ classdef test2
 
 		figFormat='png';
 		
-		alpha=0.000000001;
+		alpha=0.001;
+
+		tests={'ttest', 'kruskal-wallis'}
 	end
 	methods
 		%Runs everything
