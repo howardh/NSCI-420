@@ -144,6 +144,11 @@ classdef test3
 			colorbar;
 			saveas(h,['mean.' this.figFormat], this.figFormat);
 		end
+
+		function clear(this)
+			dir = [Const.RESULT_DIRECTORY pathname(class(this)) ];
+			rmdir(dir,'s');
+		end
 	end
 	methods (Access = private)
 		function ret=analyze(this,csd, div)
