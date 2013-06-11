@@ -8,8 +8,9 @@ function ret=main()
 	%clr('test2');
 	%run('test2');
 	%run('test3');
+	run('test4');
 
-	runAll();
+	%runAll();
 
 	cd '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
 end

@@ -1,5 +1,5 @@
 %Aligns the CSD mapping data in the spatial dimension
-classdef test4
+classdef test4 < handle
 	properties
 		expName='12mv1211';
 		testName='065';
@@ -68,7 +68,7 @@ classdef test4
 		% 	CSD data to be aligned
 		% @return
 		% 	A CSDAlignment representing the alignment of the provided CSD data
-		function ret=align(csd)
+		function ret=align(this,csd)
 			%Initialize variables
 			size1=size(this.pcsd.data);
 			size2=size(csd.data);
@@ -79,7 +79,7 @@ classdef test4
 			csd.data=mean(csd.data,3);
 
 			%Prototypical CSD
-			tempCsd1=mean(this.pcsd.data(:),3);
+			tempCsd1=mean(this.pcsd.data,3);
 			tempCsd1=tempCsd1(:);
 
 			%Find highest correlation
@@ -95,11 +95,11 @@ classdef test4
 					tWindow=this.pcsda.tWindow-this.pcsda.tWindow(1)+t;
 
 					%Get the data in that window
-					tempCsd2=csd.data(channel,time);
+					tempCsd2=csd.data(chWindow,tWindow);
 					tempCsd2=tempCsd2(:);
 
 					%Compute correlation
-					corrValues(ch,t)=computeCorrelation(tempCsd1,tempCsd2);
+					corrValues(ch,t)=this.computeCorrelation(tempCsd1,tempCsd2);
 
 					%Check if it's a better match
 					if (mean(corrValues(ch,t)) > mean(corrValues(bestCh,bestT)))
@@ -111,17 +111,32 @@ classdef test4
 			end
 
 			%Make pretties and save it to a file
+			name=[this.pcsd.testName '-' csd.testName];
 			fig=figure;
 			imagesc(corrValues);
+			title([name ' (' num2str(bestCh) ',' num2str(bestT) ')']);
+			xlabel('\Delta t (ms)');
+			ylabel('\Delta channel');
 			colorbar;
-			name=[this.pcsd.testName '-' csd.testName];
 			saveas(fig,name,'png');
 
 			%Create alignment object and return it
 			ret=CSDAlignment;
-			ret.chWindow=this.pcsd.chWindow-this.pcsd.chWindow-bestCh;
+			ret.chWindow=this.pcsda.chWindow-this.pcsda.chWindow-bestCh;
 			ret.firstChannel=bestCh;
 			return;
+		end
+
+		function ret=computeCorrelation(this,x,y)
+			lx=length(x);
+			ly=length(y);
+			if (lx ~= ly)
+				disp(['Error: test4.computeCorrelation(), x and y do not match in size. ' num2str(lx) ' ' num2str(ly)]);
+				l=min(lx,ly);
+				x=x(1:l);
+				y=y(1:l);
+			end
+			ret=mean((x-mean(x)).*(y-mean(y)))/(std(x)*std(y));
 		end
 	end
 end
