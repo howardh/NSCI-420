@@ -5,7 +5,9 @@ function ret=main()
 
 	%createImages();
 
+	%clr('test2');
 	%run('test2');
+	%run('test3');
 
 	runAll();
 
@@ -15,6 +17,11 @@ end
 function ret=run(scriptName)
 	x=eval([scriptName]);
 	x.run();
+end
+
+function ret=clr(scriptName)
+	x=eval([scriptName]);
+	x.clear();
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
