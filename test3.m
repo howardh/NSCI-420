@@ -1,4 +1,4 @@
-classdef test2
+classdef test3
 	properties
 		expName='12mv1211';
 		testName='065';
@@ -28,10 +28,10 @@ classdef test2
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						for a=2:10
-							this.alpha = 10^-a;
-   							this.runOnce();
-						end
+						%for a=2:10
+						%	this.alpha = 10^-a;
+   						%	this.runOnce();
+						%end
 						%And plot the p values too
 						this.alpha = 0;
    						this.runOnce();
@@ -85,8 +85,9 @@ classdef test2
 					h=figure;
 					set(h,'Visible','off');
 					subplot(1,2,1); %Make room for the caption
-					range=[-50 50]; %Based on a visual inspection of the results without a range
+					range=[-120 120]; %Based on a visual inspection of the results without a range
 					imagesc(transpose(output), range);
+					%imagesc(transpose(output));
 					colormap(cmap);
 					title([this.expName ' ' this.testName '\_' num2str(x)]);
 					xlabel('Orientation');
@@ -175,9 +176,9 @@ classdef test2
 						t=[1:div];
 						tCount=1;
 						while (t(end)<=sizes(2))
-							dist1 = mean(csd.data(ch,t,:,cond1),2);
-							dist2 = mean(csd.data(ch,t,:,cond2),2);
-							ret(cond1,cond2,ch,tCount) = this.test(dist1(:),dist2(:));
+							dist1 = csd.data(ch,t,:,cond1);
+							dist2 = csd.data(ch,t,:,cond2);
+							ret(cond1,cond2,ch,tCount) = this.test(dist1,dist2);
 							ret(cond2,cond1,ch,tCount) = -ret(cond1,cond2,ch,tCount);
 
 							t=t+div;
@@ -189,9 +190,28 @@ classdef test2
 			end
 		end
 		function ret=test(this,dist1,dist2)
-			mean1=mean(dist1);
-			mean2=mean(dist2);
-			[h,p]=ttest(dist1,dist2,this.alpha);
+			%Get number of trials
+			s=size(dist1);
+			trials1=s(3);
+			s=size(dist2);
+			trials2=s(3);
+
+			%Compare every trial to each other
+			x=[];
+			for t1=1:trials1
+				for t2=1:trials2
+					%Get a data point
+					p=mean(dist1(:,:,t1,:)-dist2(:,:,t2,:));
+					x=[x p]; %Append p to the data set
+				end
+			end
+
+			%t-test
+			[h,p]=ttest(x,this.alpha);
+
+			%Set direction
+			mean1=mean(dist1(:));
+			mean2=mean(dist2(:));
 			if (mean1 > mean2)
 				ret=p;
 			else

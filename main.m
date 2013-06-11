@@ -5,7 +5,7 @@ function ret=main()
 
 	%createImages();
 
-	run('test2');
+	run('test3');
 
 	%runAll();
 
