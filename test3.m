@@ -15,8 +15,7 @@ classdef test3
 	methods
 		%Runs everything
 		function run(this)
-			%divs=[10,20,40,50,100,200];
-			divs=[200];
+			divs=[10,20,40,50,100,200];
 			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
@@ -28,10 +27,10 @@ classdef test3
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						%for a=2:10
-						%	this.alpha = 10^-a;
-   						%	this.runOnce();
-						%end
+						for a=2:10
+							this.alpha = 10^-a;
+   							this.runOnce();
+						end
 						%And plot the p values too
 						this.alpha = 0;
    						this.runOnce();

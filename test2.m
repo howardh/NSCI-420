@@ -18,7 +18,6 @@ classdef test2
 		%Runs everything
 		function run(this)
 			divs=[10,20,40,50,100,200];
-			%divs=[200];
 			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
