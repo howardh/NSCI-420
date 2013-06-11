@@ -60,7 +60,9 @@ classdef test2
 				loader.expName=this.expName;
 				csd=loader.load(this.testName);
 				if ~csd.isGrating()
-					disp('Not a grating stimulus. Skipping.');
+					disp('Not a grating stimulus. Skipping and cleaning up.');
+					dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName) ];
+					rmdir(dir,'s');
 					return;
 				end
 				%Set parameters
