@@ -17,26 +17,31 @@ classdef test4 < handle
 		function run(this)
 			%Load prototypical CSD
 			this.loadPrototype();
-			this.runOnce();
 			%Every experiment
-			%for en=1:length(Const.ALL_EXPERIMENTS)
-			%	this.expName = Const.ALL_EXPERIMENTS{en};
-			%	testNames=Const.ALL_TESTS(this.expName);
-			%	%Every test within that experiment
-			%	for tn=1:length(testNames)
-			%		this.testName = testNames{tn};
-			%		this.runOnce();
-			%	end
-			%end
+			for en=1:length(Const.ALL_EXPERIMENTS)
+				this.expName = Const.ALL_EXPERIMENTS{en};
+				testNames=Const.ALL_TESTS(this.expName);
+				%Every test within that experiment
+				for tn=1:length(testNames)
+					this.testName = testNames{tn};
+					this.runOnce();
+				end
+			end
 		end
 
 		function ret=runOnce(this)
-			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName) ];
+			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
 			cdforce(dir);
 
 			loader=CSDLoader;
+			loader.expName=this.expName;
 			csd=loader.load(this.testName);
 			this.align(csd);
+		end
+
+		function clear(this)
+			dir = [Const.RESULT_DIRECTORY pathname(class(this)) ];
+			rmdir(dir,'s');
 		end
 	end
 	methods (Access = private)
@@ -46,7 +51,7 @@ classdef test4 < handle
 				return;
 			end
 
-			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName) ];
+			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
 			cdforce(dir);
 
 			%Insertion 7
@@ -113,6 +118,7 @@ classdef test4 < handle
 			%Make pretties and save it to a file
 			name=[this.pcsd.testName '-' csd.testName];
 			fig=figure;
+			set(fig,'Visible','off');
 			imagesc(corrValues);
 			title([name ' (' num2str(bestCh) ',' num2str(bestT) ')']);
 			xlabel('\Delta t (ms)');
