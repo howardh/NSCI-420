@@ -8,6 +8,8 @@ function ret=main()
 	%clr('test2');
 	%run('test2');
 	%run('test3');
+	%clr('test4');
+	%run('test4');
 
 	runAll();
 
@@ -145,4 +147,6 @@ function ret=runAll()
 	createImages();
 	run('test1');
 	run('test2');
+	run('test3');
+	run('test4');
 end
