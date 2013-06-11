@@ -27,7 +27,7 @@ classdef test3
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						for a=2:10
+						for a=1:5
 							this.alpha = 10^-a;
    							this.runOnce();
 						end
