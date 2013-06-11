@@ -18,6 +18,11 @@ function ret=run(scriptName)
 	x.run();
 end
 
+function ret=clr(scriptName)
+	x=eval([scriptName]);
+	x.clear();
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	Data to images
 
