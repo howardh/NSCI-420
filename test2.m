@@ -30,10 +30,10 @@ classdef test2
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						for a=2:10
-							this.alpha = 10^-a;
-   							this.runOnce();
-						end
+						%for a=2:10
+						%	this.alpha = 10^-a;
+   						%	this.runOnce();
+						%end
 						%And plot the p values too
 						this.alpha = 0;
    						this.runOnce();
@@ -76,13 +76,15 @@ classdef test2
 			else
 				disp(['Analysis already done. Loading results from file.']);
 				load('../ret.mat');
+				tStat=loadvar('../tstat.mat');
 			end
 
 			%Load the color map
 			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
 
-			%Plot p-values
+			%Plot p-values and t statistics
 			if (this.alpha == 0)
+				%p-values
 				ret=mean(ret,4);
 				ret(:)=log(abs(ret(:))).*sign(ret(:));
 				for x=1:8
@@ -104,7 +106,30 @@ classdef test2
 							 'Orientation ' num2str(x) ' compared to every other orientation (Including itself)' lb ...
 							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
 					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
-					saveas(h,[num2str(x) '.' this.figFormat], this.figFormat);
+					saveas(h,['p' num2str(x) '.' this.figFormat], this.figFormat);
+				end
+
+				%t statistics
+				for x=1:8
+					output=squeeze(tStat(x,:,:));
+					h=figure;
+					set(h,'Visible','off');
+					subplot(1,2,1); %Make room for the caption
+					range=[-5 5]; %Based on a visual inspection of the results without a range
+					imagesc(transpose(output), range);
+					colormap(cmap);
+					title([this.expName ' ' this.testName '\_' num2str(x) ' t Statistics']);
+					xlabel('Orientation');
+					ylabel('Channel');
+					zlabel('T statistics');
+					colorbar;
+					lb=[char(10) char(10)]; %Line break
+					caption=['Color represents the t statistics' lb ...
+							 'Proximity to white = less significant difference' lb ...
+							 'Orientation ' num2str(x) ' compared to every other orientation (Including itself)' lb ...
+							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
+					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
+					saveas(h,['t' num2str(x) '.' this.figFormat], this.figFormat);
 				end
 				return;
 			end
@@ -181,7 +206,7 @@ classdef test2
 			ret=zeros(sizes(4),sizes(4),sizes(1),floor(sizes(2)/div));
 			tStat=zeros(sizes(4),sizes(4),sizes(1),floor(sizes(2)/div));
 			for cond1=1:sizes(4)
-				for cond2=cond1:sizes(4)
+				for cond2=1:sizes(4)
 					disp([num2str(cond1) '-' num2str(cond2)]);
 					tic
 					for ch=1:sizes(1)
@@ -194,8 +219,8 @@ classdef test2
 							[p,ts] = this.test(dist1(:),dist2(:));
 							ret(cond1,cond2,ch,tCount) = p;
 							tStat(cond1,cond2,ch,tCount) = ts;
-							ret(cond2,cond1,ch,tCount) = -p;
-							tStat(cond2,cond1,ch,tCount) = -ts;
+							%ret(cond2,cond1,ch,tCount) = -p;
+							%tStat(cond2,cond1,ch,tCount) = -ts;
 
 							t=t+div;
 							tCount=tCount+1;
@@ -209,14 +234,13 @@ classdef test2
 			mean1=mean(dist1);
 			mean2=mean(dist2);
 			if (mean1 > mean2)
-				[h,p,c,s]=ttest2(dist1,dist2,this.alpha,'right');
+				[h,p,c,s]=ttest2(dist1,dist2,0.05,'right');
 				p=p;
-				t=s.tstat;
 			else
-				[h,p,c,s]=ttest2(dist1,dist2,this.alpha,'left');
+				[h,p,c,s]=ttest2(dist1,dist2,0.05,'left');
 				p=-p;
-				t=-s.tstat;
 			end
+			t=-s.tstat;
 		end
 	end
 end
