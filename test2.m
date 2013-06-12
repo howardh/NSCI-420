@@ -153,6 +153,8 @@ classdef test2
 		end
 	end
 	methods (Access = private)
+		% Computes the p values of the statistical analysis and returns it
+		% Computes the t statistics and stores it in a file 
 		function ret=analyze(this,csd, div)
 			% Col 1: 32
 			%   Channels
@@ -175,6 +177,7 @@ classdef test2
 			sizes=size(csd.data);
 
 			ret=zeros(sizes(4),sizes(4),sizes(1),floor(sizes(2)/div));
+			tStat=zeros(sizes(4),sizes(4),sizes(1),floor(sizes(2)/div));
 			for cond1=1:sizes(4)
 				for cond2=cond1:sizes(4)
 					disp([num2str(cond1) '-' num2str(cond2)]);
@@ -185,8 +188,12 @@ classdef test2
 						while (t(end)<=sizes(2))
 							dist1 = mean(csd.data(ch,t,:,cond1),2);
 							dist2 = mean(csd.data(ch,t,:,cond2),2);
-							ret(cond1,cond2,ch,tCount) = this.test(dist1(:),dist2(:));
-							ret(cond2,cond1,ch,tCount) = -ret(cond1,cond2,ch,tCount);
+
+							[p,t] = this.test(dist1(:),dist2(:));
+							ret(cond1,cond2,ch,tCount) = p;
+							tStat(cond1,cond2,ch,tCount) = t;
+							ret(cond2,cond1,ch,tCount) = -p;
+							tStat(cond2,cond1,ch,tCount) = -t;
 
 							t=t+div;
 							tCount=tCount+1;
@@ -195,16 +202,19 @@ classdef test2
 					toc
 				end
 			end
+			save(['t' csd.testName '.mat', 'tStat');
 		end
-		function ret=test(this,dist1,dist2)
+		function [p,t]=test(this,dist1,dist2)
 			mean1=mean(dist1);
 			mean2=mean(dist2);
 			if (mean1 > mean2)
-				[h,p]=ttest2(dist1,dist2,this.alpha,'right');
-				ret=p;
+				[h,p,c,s]=ttest2(dist1,dist2,this.alpha,'right');
+				p=p;
+				t=s.tstat;
 			else
-				[h,p]=ttest2(dist1,dist2,this.alpha,'left');
-				ret=-p;
+				[h,p,c,s]=ttest2(dist1,dist2,this.alpha,'left');
+				p=-p;
+				t=-s.tstat;
 			end
 		end
 	end
