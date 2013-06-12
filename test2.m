@@ -17,7 +17,8 @@ classdef test2
 	methods
 		%Runs everything
 		function run(this)
-			divs=[10,20,40,50,100,200];
+			%divs=[10,20,40,50,100,200];
+			divs=[200];
 			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
@@ -189,11 +190,11 @@ classdef test2
 							dist1 = mean(csd.data(ch,t,:,cond1),2);
 							dist2 = mean(csd.data(ch,t,:,cond2),2);
 
-							[p,t] = this.test(dist1(:),dist2(:));
+							[p,ts] = this.test(dist1(:),dist2(:));
 							ret(cond1,cond2,ch,tCount) = p;
-							tStat(cond1,cond2,ch,tCount) = t;
+							tStat(cond1,cond2,ch,tCount) = ts;
 							ret(cond2,cond1,ch,tCount) = -p;
-							tStat(cond2,cond1,ch,tCount) = -t;
+							tStat(cond2,cond1,ch,tCount) = -ts;
 
 							t=t+div;
 							tCount=tCount+1;
@@ -202,7 +203,7 @@ classdef test2
 					toc
 				end
 			end
-			save(['t' csd.testName '.mat', 'tStat');
+			save(['t' csd.testName '.mat'], 'tStat');
 		end
 		function [p,t]=test(this,dist1,dist2)
 			mean1=mean(dist1);
