@@ -69,9 +69,10 @@ classdef test2
 				csd.timeWindow=this.timeWindow;
 				csd.channelWindow=this.channelWindow;
 				%Analyze the data
-				ret=this.analyze(csd,this.timeSubdiv);
+				[ret,tStat]=this.analyze(csd,this.timeSubdiv);
 				%Save the analyzed data
 				save('../ret.mat','ret');
+				save('../tstat.mat','tStat');
 			else
 				disp(['Analysis already done. Loading results from file.']);
 				load('../ret.mat');
@@ -156,7 +157,7 @@ classdef test2
 	methods (Access = private)
 		% Computes the p values of the statistical analysis and returns it
 		% Computes the t statistics and stores it in a file 
-		function ret=analyze(this,csd, div)
+		function [ret,tStat]=analyze(this,csd, div)
 			% Col 1: 32
 			%   Channels
 			% Col 2: 3501
@@ -203,7 +204,6 @@ classdef test2
 					toc
 				end
 			end
-			save(['t' csd.testName '.mat'], 'tStat');
 		end
 		function [p,t]=test(this,dist1,dist2)
 			mean1=mean(dist1);
