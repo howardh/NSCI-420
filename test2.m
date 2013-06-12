@@ -137,8 +137,6 @@ classdef test2
 			%Convert the p values (ret) into h (0 if hypothesis is rejected, 1 otherwise)
 			ret(abs(ret) > this.alpha) = 0;
 			ret(:) = sign(ret(:)); %Can be 1 or -1, depending on the direction of the difference
-			%ret(abs(ret) < this.alpha & ret > 0) = 1;
-			%ret(abs(ret) < this.alpha & ret < 0) = -1;
 
 			%Produce 8 figures, one for each orientation
 			for x=1:8
