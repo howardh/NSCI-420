@@ -53,5 +53,11 @@ classdef CSDData
 		function ret=isCSDMapping(this)
 			ret=strcmp(this.stimulus, 'CSDmapping');
 		end
+		function ret=isFullField(this)
+			ret=strcmp(this.stimulusObject.TextureType, 'FullField');
+		end
+		function ret=isChecker(this)
+			ret=strcmp(this.stimulusObject.TextureType, 'Checkers');
+		end
     end
 end

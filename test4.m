@@ -38,7 +38,7 @@ classdef test4 < handle
 			csd=loader.load(this.testName);
 
 			%Check if it's a CSDMapping run
-			if csd.isCSDMapping()
+			if csd.isCSDMapping() & csd.isFullField()
 				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
 				this.align(csd);
 			end
