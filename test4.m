@@ -4,33 +4,47 @@ classdef test4 < handle
 		expName='12mv1211';
 		testName='065';
 
-		timeWindow=1000:1200;
-		channelWindow=1:32;
-
 		figFormat='png';
 
 		pcsd; %Prototypical csd
 		pcsda; %Prototypical csd alignment
+		%Full field
+		pcsdff;
+		pcsdffa;
+		%Checker
+		pcsdc;
+		pcsdca;
+
+		%Flag (1 = use correlation, 0 = use covariance)
+		useCorr=0;
 	end
 	methods
 		%Runs everything
 		function run(this)
 			%Load prototypical CSD
 			this.loadPrototype();
-			%Every experiment
-			for en=1:length(Const.ALL_EXPERIMENTS)
-				this.expName = Const.ALL_EXPERIMENTS{en};
-				testNames=Const.ALL_TESTS(this.expName);
-				%Every test within that experiment
-				for tn=1:length(testNames)
-					this.testName = testNames{tn};
-					this.runOnce();
+			%Use both correlation and covariance
+			for uc=0:1
+				this.useCorr=uc; %wtf, why can't I just loop using this instead of uc?
+				%Every experiment
+				for en=1:length(Const.ALL_EXPERIMENTS)
+					this.expName = Const.ALL_EXPERIMENTS{en};
+					testNames=Const.ALL_TESTS(this.expName);
+					%Every test within that experiment
+					for tn=1:length(testNames)
+						this.testName = testNames{tn};
+						this.runOnce();
+					end
 				end
 			end
 		end
 
 		function ret=runOnce(this)
-			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
+			if (this.useCorr == 1)
+				dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, 'Correlation') ];
+			else
+				dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, 'Covariance') ];
+			end
 			cdforce(dir);
 
 			loader=CSDLoader;
@@ -39,8 +53,15 @@ classdef test4 < handle
 
 			%Check if it's a CSDMapping run
 			if csd.isCSDMapping()
+				if (csd.isFullField())
+					this.pcsd=this.pcsdff;
+					this.pcsda=this.pcsdffa;
+				else
+					this.pcsd=this.pcsdc;
+					this.pcsda=this.pcsdca;
+				end
 				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
-				this.align(csd);
+				ret=this.align(csd);
 			end
 		end
 
@@ -59,35 +80,38 @@ classdef test4 < handle
 			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
 			cdforce(dir);
 
-			%%Insertion 7
-			%this.pcsda=CSDAlignment;
-			%this.pcsda.expName='12mv1211';
-			%this.pcsda.testName='095';
-			%this.pcsda.chWindow=[6:16];
-			%this.pcsda.tWindow=[1000:1200];
-			%this.pcsda.firstChannel=6;
-			%ret=this.pcsda;
-			%save('095.mat','ret');
-
-			%loader=CSDLoader;
-			%this.pcsd=loader.load('095');
-			%this.pcsd.data=this.pcsd.data(this.pcsda.chWindow, this.pcsda.tWindow, :);
-
-			%Insertion 5
-			this.pcsda=CSDAlignment;
-			this.pcsda.expName='12mv1211';
-			this.pcsda.testName='068';
-			this.pcsda.chWindow=[3:16];
-			this.pcsda.tWindow=490:580;
-			this.pcsda.firstChannel=5;
-			ret=this.pcsda;
+			%Full field, Insertion 5
+			disp('Loading full field prototypical CSD');
+			this.pcsdffa=CSDAlignment;
+			this.pcsdffa.expName='12mv1211';
+			this.pcsdffa.testName='068';
+			this.pcsdffa.chWindow=[3:16];
+			this.pcsdffa.tWindow=490:580;
+			this.pcsdffa.firstChannel=5;
+			ret=this.pcsdffa;
 			save('068.mat','ret');
 
 			loader=CSDLoader;
-			this.pcsd=loader.load('068');
-			this.pcsd.data=this.pcsd.data(this.pcsda.chWindow, this.pcsda.tWindow, :);
+			this.pcsdff=loader.load('068');
+			this.pcsdff.data=this.pcsdff.data(this.pcsdffa.chWindow, this.pcsdffa.tWindow, :);
+
+			%Checkers, Insertion 5
+			disp('Loading checkered prototypical CSD');
+			this.pcsdca=CSDAlignment;
+			this.pcsdca.expName='12mv1211';
+			this.pcsdca.testName='067';
+			this.pcsdca.chWindow=[3:16];
+			this.pcsdca.tWindow=495:570;
+			this.pcsdca.firstChannel=5;
+			ret=this.pcsdca;
+			save('067.mat','ret');
+
+			loader=CSDLoader;
+			this.pcsdc=loader.load('067');
+			this.pcsdc.data=this.pcsdc.data(this.pcsdca.chWindow, this.pcsdca.tWindow, :);
 		end
 
+		% Aligns the csd and creates a figure showing the correlations.
 		% @param csd
 		% 	CSD data to be aligned
 		% @return
@@ -151,6 +175,8 @@ classdef test4 < handle
 			saveas(fig,name,'png');
 		end
 
+		%Note: Doesn't necessarily compute the correlation
+		%TODO: Find a better name for this method
 		function ret=computeCorrelation(this,x,y)
 			lx=length(x);
 			ly=length(y);
@@ -160,7 +186,13 @@ classdef test4 < handle
 				x=x(1:l);
 				y=y(1:l);
 			end
-			ret=mean((x-mean(x)).*(y-mean(y)))/(std(x)*std(y));
+			if (this.useCorr==1)
+				%Correlation
+				ret=mean((x-mean(x)).*(y-mean(y)))/(std(x)*std(y));
+			else
+				%Covariance
+				ret=mean((x-mean(x)).*(y-mean(y)));
+			end
 		end
 	end
 end
