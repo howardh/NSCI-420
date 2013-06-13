@@ -68,19 +68,22 @@ classdef test2
 				csd.timeWindow=this.timeWindow;
 				csd.channelWindow=this.channelWindow;
 				%Analyze the data
-				ret=this.analyze(csd,this.timeSubdiv);
+				[ret,tStat]=this.analyze(csd,this.timeSubdiv);
 				%Save the analyzed data
 				save('../ret.mat','ret');
+				save('../tstat.mat','tStat');
 			else
 				disp(['Analysis already done. Loading results from file.']);
 				load('../ret.mat');
+				tStat=loadvar('../tstat.mat');
 			end
 
 			%Load the color map
 			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
 
-			%Plot p-values
+			%Plot p-values and t statistics
 			if (this.alpha == 0)
+				%p-values
 				ret=mean(ret,4);
 				ret(:)=log(abs(ret(:))).*sign(ret(:));
 				for x=1:8
@@ -102,7 +105,30 @@ classdef test2
 							 'Orientation ' num2str(x) ' compared to every other orientation (Including itself)' lb ...
 							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
 					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
-					saveas(h,[num2str(x) '.' this.figFormat], this.figFormat);
+					saveas(h,['p' num2str(x) '.' this.figFormat], this.figFormat);
+				end
+
+				%t statistics
+				for x=1:8
+					output=squeeze(tStat(x,:,:));
+					h=figure;
+					set(h,'Visible','off');
+					subplot(1,2,1); %Make room for the caption
+					range=[-5 5]; %Based on a visual inspection of the results without a range
+					imagesc(transpose(output), range);
+					colormap(cmap);
+					title([this.expName ' ' this.testName '\_' num2str(x) ' t Statistics']);
+					xlabel('Orientation');
+					ylabel('Channel');
+					zlabel('T statistics');
+					colorbar;
+					lb=[char(10) char(10)]; %Line break
+					caption=['Color represents the t statistics' lb ...
+							 'Proximity to white = less significant difference' lb ...
+							 'Orientation ' num2str(x) ' compared to every other orientation (Including itself)' lb ...
+							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
+					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
+					saveas(h,['t' num2str(x) '.' this.figFormat], this.figFormat);
 				end
 				return;
 			end
@@ -110,8 +136,6 @@ classdef test2
 			%Convert the p values (ret) into h (0 if hypothesis is rejected, 1 otherwise)
 			ret(abs(ret) > this.alpha) = 0;
 			ret(:) = sign(ret(:)); %Can be 1 or -1, depending on the direction of the difference
-			%ret(abs(ret) < this.alpha & ret > 0) = 1;
-			%ret(abs(ret) < this.alpha & ret < 0) = -1;
 
 			%Produce 8 figures, one for each orientation
 			for x=1:8
@@ -153,7 +177,9 @@ classdef test2
 		end
 	end
 	methods (Access = private)
-		function ret=analyze(this,csd, div)
+		% Computes the p values of the statistical analysis and returns it
+		% Computes the t statistics and stores it in a file 
+		function [ret,tStat]=analyze(this,csd, div)
 			% Col 1: 32
 			%   Channels
 			% Col 2: 3501
@@ -175,8 +201,9 @@ classdef test2
 			sizes=size(csd.data);
 
 			ret=zeros(sizes(4),sizes(4),sizes(1),floor(sizes(2)/div));
+			tStat=zeros(sizes(4),sizes(4),sizes(1),floor(sizes(2)/div));
 			for cond1=1:sizes(4)
-				for cond2=cond1:sizes(4)
+				for cond2=1:sizes(4)
 					disp([num2str(cond1) '-' num2str(cond2)]);
 					tic
 					for ch=1:sizes(1)
@@ -185,8 +212,12 @@ classdef test2
 						while (t(end)<=sizes(2))
 							dist1 = mean(csd.data(ch,t,:,cond1),2);
 							dist2 = mean(csd.data(ch,t,:,cond2),2);
-							ret(cond1,cond2,ch,tCount) = this.test(dist1(:),dist2(:));
-							ret(cond2,cond1,ch,tCount) = -ret(cond1,cond2,ch,tCount);
+
+							[p,ts] = this.test(dist1(:),dist2(:));
+							ret(cond1,cond2,ch,tCount) = p;
+							tStat(cond1,cond2,ch,tCount) = ts;
+							%ret(cond2,cond1,ch,tCount) = -p;
+							%tStat(cond2,cond1,ch,tCount) = -ts;
 
 							t=t+div;
 							tCount=tCount+1;
@@ -196,16 +227,17 @@ classdef test2
 				end
 			end
 		end
-		function ret=test(this,dist1,dist2)
+		function [p,t]=test(this,dist1,dist2)
 			mean1=mean(dist1);
 			mean2=mean(dist2);
 			if (mean1 > mean2)
-				[h,p]=ttest2(dist1,dist2,this.alpha,'right');
-				ret=p;
+				[h,p,c,s]=ttest2(dist1,dist2,0.05,'right');
+				p=p;
 			else
-				[h,p]=ttest2(dist1,dist2,this.alpha,'left');
-				ret=-p;
+				[h,p,c,s]=ttest2(dist1,dist2,0.05,'left');
+				p=-p;
 			end
+			t=-s.tstat;
 		end
 	end
 end

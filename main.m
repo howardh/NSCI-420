@@ -1,5 +1,6 @@
 function ret=main()
 	addpath '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
+	onCleanup(@() cd('\\132.216.58.64\f\SummerStudents\Howard\Scripts'));
 
 	%convertAllData();
 
@@ -9,11 +10,9 @@ function ret=main()
 	%run('test2');
 	%run('test3');
 	%clr('test4');
-	%run('test4');
+	run('test4');
 
-	runAll();
-
-	cd '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
+	%runAll();
 end
 
 function ret=run(scriptName)
