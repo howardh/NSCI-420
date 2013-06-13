@@ -76,15 +76,15 @@ classdef test4 < handle
 			%Insertion 5
 			this.pcsda=CSDAlignment;
 			this.pcsda.expName='12mv1211';
-			this.pcsda.testName='065';
+			this.pcsda.testName='068';
 			this.pcsda.chWindow=[3:16];
-			this.pcsda.tWindow=[1040:1070];
+			this.pcsda.tWindow=490:580;
 			this.pcsda.firstChannel=5;
 			ret=this.pcsda;
-			save('065.mat','ret');
+			save('068.mat','ret');
 
 			loader=CSDLoader;
-			this.pcsd=loader.load('065');
+			this.pcsd=loader.load('068');
 			this.pcsd.data=this.pcsd.data(this.pcsda.chWindow, this.pcsda.tWindow, :);
 		end
 
@@ -144,7 +144,7 @@ classdef test4 < handle
 			fig=figure;
 			set(fig,'Visible','off');
 			imagesc(corrValues);
-			title([name ' (' num2str(bestCh) ',' num2str(bestT) ', fc: ' num2str(ret.firstChannel) ', Insertion ' num2str(Const.INSERTION(this.expName, this.testName)) ')']);
+			title([name ' (' num2str(bestCh) ',' num2str(bestT) ', fc: ' num2str(ret.firstChannel) ', Insertion ' num2str(Const.INSERTION(this.expName, this.testName)) ')']); %TODO: Put this in the caption rather than the title
 			xlabel('\Delta t (ms)');
 			ylabel('\Delta channel');
 			colorbar;

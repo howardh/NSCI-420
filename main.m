@@ -12,7 +12,7 @@ function ret=main()
 	%clr('test4');
 	run('test4');
 
-	runAll();
+	%runAll();
 end
 
 function ret=run(scriptName)
