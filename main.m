@@ -6,13 +6,13 @@ function ret=main()
 
 	%createImages();
 
-	clr('test2');
-	run('test2');
+	%clr('test2');
+	%run('test2');
 	%run('test3');
 	%clr('test4');
-	%run('test4');
+	run('test4');
 
-	runAll();
+	%runAll();
 end
 
 function ret=run(scriptName)

@@ -36,7 +36,12 @@ classdef test4 < handle
 			loader=CSDLoader;
 			loader.expName=this.expName;
 			csd=loader.load(this.testName);
-			this.align(csd);
+
+			%Check if it's a CSDMapping run
+			if csd.isCSDMapping()
+				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
+				this.align(csd);
+			end
 		end
 
 		function clear(this)
@@ -54,18 +59,32 @@ classdef test4 < handle
 			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
 			cdforce(dir);
 
-			%Insertion 7
+			%%Insertion 7
+			%this.pcsda=CSDAlignment;
+			%this.pcsda.expName='12mv1211';
+			%this.pcsda.testName='095';
+			%this.pcsda.chWindow=[6:16];
+			%this.pcsda.tWindow=[1000:1200];
+			%this.pcsda.firstChannel=6;
+			%ret=this.pcsda;
+			%save('095.mat','ret');
+
+			%loader=CSDLoader;
+			%this.pcsd=loader.load('095');
+			%this.pcsd.data=this.pcsd.data(this.pcsda.chWindow, this.pcsda.tWindow, :);
+
+			%Insertion 5
 			this.pcsda=CSDAlignment;
 			this.pcsda.expName='12mv1211';
-			this.pcsda.testName='095';
-			this.pcsda.chWindow=[6:16];
-			this.pcsda.tWindow=[1000:1200];
-			this.pcsda.firstChannel=6;
+			this.pcsda.testName='068';
+			this.pcsda.chWindow=[3:16];
+			this.pcsda.tWindow=490:580;
+			this.pcsda.firstChannel=5;
 			ret=this.pcsda;
-			save('095.mat','ret');
+			save('068.mat','ret');
 
 			loader=CSDLoader;
-			this.pcsd=loader.load('095');
+			this.pcsd=loader.load('068');
 			this.pcsd.data=this.pcsd.data(this.pcsda.chWindow, this.pcsda.tWindow, :);
 		end
 
@@ -115,22 +134,21 @@ classdef test4 < handle
 				toc
 			end
 
+			%Create alignment object to be returned
+			ret=CSDAlignment;
+			ret.chWindow=this.pcsda.chWindow-this.pcsda.chWindow-bestCh;
+			ret.firstChannel=bestCh+(this.pcsda.firstChannel-this.pcsda.chWindow(1)); %TODO: Check math
+
 			%Make pretties and save it to a file
 			name=[this.pcsd.testName '-' csd.testName];
 			fig=figure;
 			set(fig,'Visible','off');
 			imagesc(corrValues);
-			title([name ' (' num2str(bestCh) ',' num2str(bestT) ')']);
+			title([name ' (' num2str(bestCh) ',' num2str(bestT) ', fc: ' num2str(ret.firstChannel) ', Insertion ' num2str(Const.INSERTION(this.expName, this.testName)) ')']); %TODO: Put this in the caption rather than the title
 			xlabel('\Delta t (ms)');
 			ylabel('\Delta channel');
 			colorbar;
 			saveas(fig,name,'png');
-
-			%Create alignment object and return it
-			ret=CSDAlignment;
-			ret.chWindow=this.pcsda.chWindow-this.pcsda.chWindow-bestCh;
-			ret.firstChannel=bestCh;
-			return;
 		end
 
 		function ret=computeCorrelation(this,x,y)
