@@ -4,9 +4,6 @@ classdef test4 < handle
 		expName='12mv1211';
 		testName='065';
 
-		timeWindow=1000:1200;
-		channelWindow=1:32;
-
 		figFormat='png';
 
 		pcsd; %Prototypical csd
