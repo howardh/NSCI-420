@@ -26,16 +26,32 @@ classdef test4 < handle
 			%Use both correlation and covariance
 			for uc=0:1
 				this.useCorr=uc; %wtf, why can't I just loop using this instead of uc?
+
 				%Every experiment
 				for en=1:length(Const.ALL_EXPERIMENTS)
 					this.expName = Const.ALL_EXPERIMENTS{en};
 					testNames=Const.ALL_TESTS(this.expName);
+					%Initialize results
+					results=containers.Map;
 					%Every test within that experiment
 					for tn=1:length(testNames)
 						this.testName = testNames{tn};
-						this.runOnce();
+						ret=this.runOnce();
+						%Store results
+						if ~isempty(ret)
+							id=[this.testName];
+							results(id)=ret;
+						end
 					end
+					dir=[Const.RESULT_DIRECTORY pathname(class(this), this.expName)];
+					if uc==1
+						dir=[dir pathname('Correlation')];
+					else
+						dir=[dir pathname('Covariance')];
+					end
+					save([dir 'results.mat'],'results');
 				end
+
 			end
 		end
 
@@ -62,7 +78,9 @@ classdef test4 < handle
 				end
 				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
 				ret=this.align(csd);
+				return;
 			end
+			ret=[];
 		end
 
 		function clear(this)
@@ -160,7 +178,11 @@ classdef test4 < handle
 
 			%Create alignment object to be returned
 			ret=CSDAlignment;
-			ret.chWindow=this.pcsda.chWindow-this.pcsda.chWindow-bestCh;
+			ret.expName=this.expName;
+			ret.testName=this.testName;
+			ret.insertion=Const.INSERTION(this.expName,this.testName);
+			ret.chWindow=this.pcsda.chWindow-this.pcsda.chWindow(1)+bestCh;
+			ret.tWindow=this.pcsda.tWindow-this.pcsda.tWindow(1)+bestT;
 			ret.firstChannel=bestCh+(this.pcsda.firstChannel-this.pcsda.chWindow(1)); %TODO: Check math
 
 			%Make pretties and save it to a file
