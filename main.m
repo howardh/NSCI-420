@@ -80,7 +80,7 @@ function createImages()
 					saveas(h, [path x{i} '.fig'], 'fig');
 					saveas(h, [path x{i} '.png'], 'png');
 				else
-					disp('Not grating. Skipping.');
+					disp('Not grating or CSDMapping. Skipping.');
 				end
 			catch exception
 				disp(' some error occurred');
