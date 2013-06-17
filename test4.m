@@ -87,6 +87,34 @@ classdef test4 < handle
 			dir = [Const.RESULT_DIRECTORY pathname(class(this)) ];
 			rmdir(dir,'s');
 		end
+
+		%Standard deviation viewer
+		function stdViewer(this)
+			this.loadPrototype();
+
+			loader=CSDLoader;
+			loader.expName=this.expName;
+			csd=loader.load(this.testName);
+
+			%Check if it's a CSDMapping run
+			if csd.isCSDMapping()
+				if (csd.isFullField())
+					this.pcsd=this.pcsdff;
+					this.pcsda=this.pcsdffa;
+				else
+					this.pcsd=this.pcsdc;
+					this.pcsda=this.pcsdca;
+				end
+				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
+
+				ret=zeros(size(csd.data)-size(this.pcsd.data));
+
+				%TODO: Loop through all possible alignments and get the standard deviation, store them in ret, the plot it
+
+				return;
+			end
+			ret=[];
+		end
 	end
 	methods (Access = private)
 		function loadPrototype(this)
