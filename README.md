@@ -11,3 +11,8 @@
 * Saves the results from each experiment in a single .mat file
 	* Contains a map of CSDAlignment objects
 	* Key: testName as a string (3 characters with leading zeros)
+
+## Test5
+
+* Requires having run Test4 first (Uses the generated .mat file)
+* Interpolates the results to find the alignment for grating stimulus runs
