@@ -1,9 +1,11 @@
 %Class containing constants used in the scripts
 classdef Const
 	properties (Constant)
+		%SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
 		%DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
 		%FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
 		%RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+		SCRIPT_DIRECTORY =	'~/Documents/MATLAB/Scripts/';
 		DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
 		FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';
 		RESULT_DIRECTORY =	'~/Documents/MATLAB/Results/';
