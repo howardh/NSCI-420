@@ -1,14 +1,14 @@
 %Class containing constants used in the scripts
 classdef Const
 	properties (Constant)
-		%SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-		%DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
-		%FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
-		%RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
-		SCRIPT_DIRECTORY =	'~/Documents/MATLAB/Scripts/';
-		DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
-		FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';
-		RESULT_DIRECTORY =	'~/Documents/MATLAB/Results/';
+		SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
+		DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
+		FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
+		RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+		%SCRIPT_DIRECTORY =	'~/Documents/MATLAB/Scripts/';
+		%DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
+		%FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';
+		%RESULT_DIRECTORY =	'~/Documents/MATLAB/Results/';
 
 		%TODO: A list of all experiment names
 		ALL_EXPERIMENTS = {'12mv1211'};
@@ -44,6 +44,13 @@ classdef Const
 				return;
 			end
 			ret={'000'};
+		end
+
+		function ret=ALL_INSERTIONS(expName)
+			switch expName
+				case '12mv1211'
+					ret=[1 2 4:12];
+			end
 		end
 
 		% Returns the insertion number for the experiment and test

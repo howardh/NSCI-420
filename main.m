@@ -1,5 +1,5 @@
 function ret=main()
-	addpath Const.SCRIPT_DIRECTORY;
+	addpath(Const.SCRIPT_DIRECTORY);
 	onCleanup(@() cd(Const.SCRIPT_DIRECTORY));
 
 	%convertAllData();
@@ -7,10 +7,11 @@ function ret=main()
 	%createImages();
 
 	%clr('test2');
-	run('test2');
+	%run('test2');
 	%run('test3');
 	%clr('test4');
 	%run('test4');
+	run('test5');
 
 	%runAll();
 end

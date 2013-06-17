@@ -14,6 +14,8 @@
 * Saves the results from each experiment in a single .mat file
 	* Contains a map of CSDAlignment objects
 	* Key: testName as a string (3 characters with leading zeros)
+* Files generated
+	* results.mat (test4/expName/)
 
 ## Test5
 
