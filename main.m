@@ -1,6 +1,6 @@
 function ret=main()
-	addpath '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-	onCleanup(@() cd('\\132.216.58.64\f\SummerStudents\Howard\Scripts'));
+	addpath(Const.SCRIPT_DIRECTORY);
+	onCleanup(@() cd(Const.SCRIPT_DIRECTORY));
 
 	%convertAllData();
 
@@ -10,7 +10,8 @@ function ret=main()
 	%run('test2');
 	%run('test3');
 	%clr('test4');
-	run('test4');
+	%run('test4');
+	run('test5');
 
 	%runAll();
 end

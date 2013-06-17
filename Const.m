@@ -1,9 +1,14 @@
 %Class containing constants used in the scripts
 classdef Const
 	properties (Constant)
+		SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
 		DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
 		FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
 		RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+		%SCRIPT_DIRECTORY =	'~/Documents/MATLAB/Scripts/';
+		%DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
+		%FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';
+		%RESULT_DIRECTORY =	'~/Documents/MATLAB/Results/';
 
 		%TODO: A list of all experiment names
 		ALL_EXPERIMENTS = {'12mv1211'};
@@ -41,6 +46,13 @@ classdef Const
 			ret={'000'};
 		end
 
+		function ret=ALL_INSERTIONS(expName)
+			switch expName
+				case '12mv1211'
+					ret=[1 2 4:12];
+			end
+		end
+
 		% Returns the insertion number for the experiment and test
 		function ret=INSERTION(expName, testName)
 			%Get the list of where each insertion ends
@@ -53,6 +65,19 @@ classdef Const
 			tn=str2num(testName);
 			for ret=1:length(x)
 				if tn <= x(ret)
+					return;
+				end
+			end
+		end
+
+		function ret=TESTS_IN_INSERTION(expName, insertion)
+			tests=Const.ALL_TESTS(expName);
+			ret=[];
+			for i=1:length(tests)
+				ins=Const.INSERTION(expName,tests{i});
+				if ins==insertion
+					ret=[ret tests(i)];
+				elseif ins>insertion
 					return;
 				end
 			end
