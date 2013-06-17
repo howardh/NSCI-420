@@ -1,16 +1,16 @@
 function ret=main()
-	addpath '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-	onCleanup(@() cd('\\132.216.58.64\f\SummerStudents\Howard\Scripts'));
+	addpath Const.SCRIPT_DIRECTORY;
+	onCleanup(@() cd(Const.SCRIPT_DIRECTORY));
 
 	%convertAllData();
 
 	%createImages();
 
 	%clr('test2');
-	%run('test2');
+	run('test2');
 	%run('test3');
 	%clr('test4');
-	run('test4');
+	%run('test4');
 
 	%runAll();
 end
@@ -80,7 +80,7 @@ function createImages()
 					saveas(h, [path x{i} '.fig'], 'fig');
 					saveas(h, [path x{i} '.png'], 'png');
 				else
-					disp('Not grating. Skipping.');
+					disp('Not grating or CSDMapping. Skipping.');
 				end
 			catch exception
 				disp(' some error occurred');
