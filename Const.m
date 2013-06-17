@@ -1,9 +1,12 @@
 %Class containing constants used in the scripts
 classdef Const
 	properties (Constant)
-		DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
-		FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
-		RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+		%DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
+		%FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
+		%RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+		DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
+		FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';
+		RESULT_DIRECTORY =	'~/Documents/MATLAB/Results/';
 
 		%TODO: A list of all experiment names
 		ALL_EXPERIMENTS = {'12mv1211'};
@@ -53,6 +56,19 @@ classdef Const
 			tn=str2num(testName);
 			for ret=1:length(x)
 				if tn <= x(ret)
+					return;
+				end
+			end
+		end
+
+		function ret=TESTS_IN_INSERTION(expName, insertion)
+			tests=Const.ALL_TESTS(expName);
+			ret=[];
+			for i=1:length(tests)
+				ins=Const.INSERTION(expName,tests{i});
+				if ins==insertion
+					ret=[ret tests(i)];
+				elseif ins>insertion
 					return;
 				end
 			end
