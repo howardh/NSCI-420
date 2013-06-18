@@ -13,14 +13,14 @@ function ret=main()
 	%run('test4');
 	%run('test5');
 
-	x=test4;
-	x.testName='071';
-	x.stdViewer();
+	%x=test4;
+	%x.testName='071';
+	%x.stdViewer();
 	%x.pcsdViewer();
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	%runAll();
+	runAll();
 end
 
 function ret=run(scriptName)
