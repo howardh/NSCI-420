@@ -14,8 +14,9 @@ function ret=main()
 	%run('test5');
 
 	x=test4;
-	x.testName='143';
-	x.stdViewer();
+	%x.pcsdViewer();
+	x.testName='071';
+	x.alignmentViewer();
 
 	%runAll();
 end

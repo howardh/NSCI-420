@@ -127,10 +127,59 @@ classdef test4 < handle
 			ret=[];
 		end
 
+		function pcsdViewer(this, pcsda)
+			%Show both full field and checkerboard stimuli
+			if (nargin <= 1)
+				this.loadPrototype();
+				this.pcsdViewer(this.pcsdffa);
+				this.pcsdViewer(this.pcsdca);
+				return;
+			end
+
+			loader = CSDLoader;
+
+			csd = loader.load(pcsda.testName);
+			csd.data = mean(csd.data, 3);
+			figure;
+			imagesc(csd.data);
+			title([csd.testName ' - ' csd.stimulusObject.TextureType]);
+			xlabel('Time (ms)');
+			ylabel('Channel');
+			hold on;
+			rect = [pcsda.tWindow(1) ...
+					pcsda.chWindow(1) ...
+					pcsda.tWindow(end)-pcsda.tWindow(1) ...
+					pcsda.chWindow(end)-pcsda.chWindow(1)];
+			rectangle('position',rect+[-.5 -.5 0 0],'LineWidth',1);
+		end
+
 		%CSD Window (alignment) viewer
 		%run() must be called first.
 		function alignmentViewer(this)
-			%imagesc(rand(20)); hold on; rectangle('position',[1 2 10 10]+[-.5 -.5 0 0],'LineWidth',2);
+			dir=[Const.RESULT_DIRECTORY pathname(class(this), this.expName, 'Covariance')];
+			cd(dir);
+
+			load('results.mat');
+			csda = results(this.testName);
+
+			loader=CSDLoader;
+			csd=loader.load(this.testName);
+
+			csd.data = mean(csd.data, 3);
+			csd.data = csd.data(:,1:500) + csd.data(:,501:1000) + csd.data(:,1001:1500) + csd.data(:,1501:2000);
+
+			figure;
+			imagesc(csd.data, [-45 45]);
+			colorbar;
+			title([csd.testName ' - ' csd.stimulusObject.TextureType]);
+			xlabel('Time (ms)');
+			ylabel('Channel');
+			hold on;
+			rect = [csda.tWindow(1) ...
+					csda.chWindow(1) ...
+					csda.tWindow(end)-csda.tWindow(1) ...
+					csda.chWindow(end)-csda.chWindow(1)];
+			rectangle('position',rect+[-.5 -.5 0 0],'LineWidth',2);
 		end
 	end
 	methods (Access = private)
