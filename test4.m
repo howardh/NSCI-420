@@ -105,15 +105,81 @@ classdef test4 < handle
 					this.pcsd=this.pcsdc;
 					this.pcsda=this.pcsdca;
 				end
-				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
+				%csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
 
-				ret=zeros(size(csd.data)-size(this.pcsd.data));
+				s=size(csd.data)-size(this.pcsd.data);
+				ret=zeros(s(1:2));
 
-				%TODO: Loop through all possible alignments and get the standard deviation, store them in ret, the plot it
+				csd.data=mean(mean(csd.data,4),3);
+				channels=s(1);
+				times=s(2);
+				for ch=1:channels
+					for t=1:times
+						x=csd.data(this.pcsda.chWindow-this.pcsda.chWindow(1)+ch,this.pcsda.tWindow-this.pcsda.tWindow(1)+t);
+						ret(ch,t) = std(x(:));
+					end
+				end
+				imagesc(ret);
+				colorbar;
 
 				return;
 			end
 			ret=[];
+		end
+
+		function pcsdViewer(this, pcsda)
+			%Show both full field and checkerboard stimuli
+			if (nargin <= 1)
+				this.loadPrototype();
+				this.pcsdViewer(this.pcsdffa);
+				this.pcsdViewer(this.pcsdca);
+				return;
+			end
+
+			loader = CSDLoader;
+
+			csd = loader.load(pcsda.testName);
+			csd.data = mean(csd.data, 3);
+			figure;
+			imagesc(csd.data);
+			title([csd.testName ' - ' csd.stimulusObject.TextureType]);
+			xlabel('Time (ms)');
+			ylabel('Channel');
+			hold on;
+			rect = [pcsda.tWindow(1) ...
+					pcsda.chWindow(1) ...
+					pcsda.tWindow(end)-pcsda.tWindow(1) ...
+					pcsda.chWindow(end)-pcsda.chWindow(1)];
+			rectangle('position',rect+[-.5 -.5 0 0],'LineWidth',1);
+		end
+
+		%CSD Window (alignment) viewer
+		%run() must be called first.
+		function alignmentViewer(this)
+			dir=[Const.RESULT_DIRECTORY pathname(class(this), this.expName, 'Covariance')];
+			cd(dir);
+
+			load('results.mat');
+			csda = results(this.testName);
+
+			loader=CSDLoader;
+			csd=loader.load(this.testName);
+
+			csd.data = mean(csd.data, 3);
+			csd.data = csd.data(:,1:500) + csd.data(:,501:1000) + csd.data(:,1001:1500) + csd.data(:,1501:2000);
+
+			figure;
+			imagesc(csd.data, [-45 45]);
+			colorbar;
+			title([csd.testName ' - ' csd.stimulusObject.TextureType]);
+			xlabel('Time (ms)');
+			ylabel('Channel');
+			hold on;
+			rect = [csda.tWindow(1) ...
+					csda.chWindow(1) ...
+					csda.tWindow(end)-csda.tWindow(1) ...
+					csda.chWindow(end)-csda.chWindow(1)];
+			rectangle('position',rect+[-.5 -.5 0 0],'LineWidth',2);
 		end
 	end
 	methods (Access = private)
