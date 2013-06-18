@@ -11,7 +11,11 @@ function ret=main()
 	%run('test3');
 	%clr('test4');
 	%run('test4');
-	run('test5');
+	%run('test5');
+
+	x=test4;
+	x.testName='143';
+	x.stdViewer();
 
 	%runAll();
 end
