@@ -2,6 +2,7 @@ classdef CSDAlignment
 	properties
 		expName;
 		testName;
+		insertion;	%Insertion number
 
 		chWindow;	%Channels that were compared for the alignment
 		tWindow;	%Time window

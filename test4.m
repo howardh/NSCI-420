@@ -26,16 +26,32 @@ classdef test4 < handle
 			%Use both correlation and covariance
 			for uc=0:1
 				this.useCorr=uc; %wtf, why can't I just loop using this instead of uc?
+
 				%Every experiment
 				for en=1:length(Const.ALL_EXPERIMENTS)
 					this.expName = Const.ALL_EXPERIMENTS{en};
 					testNames=Const.ALL_TESTS(this.expName);
+					%Initialize results
+					results=containers.Map;
 					%Every test within that experiment
 					for tn=1:length(testNames)
 						this.testName = testNames{tn};
-						this.runOnce();
+						ret=this.runOnce();
+						%Store results
+						if ~isempty(ret)
+							id=[this.testName];
+							results(id)=ret;
+						end
 					end
+					dir=[Const.RESULT_DIRECTORY pathname(class(this), this.expName)];
+					if uc==1
+						dir=[dir pathname('Correlation')];
+					else
+						dir=[dir pathname('Covariance')];
+					end
+					save([dir 'results.mat'],'results');
 				end
+
 			end
 		end
 
@@ -62,12 +78,108 @@ classdef test4 < handle
 				end
 				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
 				ret=this.align(csd);
+				return;
 			end
+			ret=[];
 		end
 
 		function clear(this)
 			dir = [Const.RESULT_DIRECTORY pathname(class(this)) ];
 			rmdir(dir,'s');
+		end
+
+		%Standard deviation viewer
+		function stdViewer(this)
+			this.loadPrototype();
+
+			loader=CSDLoader;
+			loader.expName=this.expName;
+			csd=loader.load(this.testName);
+
+			%Check if it's a CSDMapping run
+			if csd.isCSDMapping()
+				if (csd.isFullField())
+					this.pcsd=this.pcsdff;
+					this.pcsda=this.pcsdffa;
+				else
+					this.pcsd=this.pcsdc;
+					this.pcsda=this.pcsdca;
+				end
+				%csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
+
+				s=size(csd.data)-size(this.pcsd.data);
+				ret=zeros(s(1:2));
+
+				csd.data=mean(mean(csd.data,4),3);
+				channels=s(1);
+				times=s(2);
+				for ch=1:channels
+					for t=1:times
+						x=csd.data(this.pcsda.chWindow-this.pcsda.chWindow(1)+ch,this.pcsda.tWindow-this.pcsda.tWindow(1)+t);
+						ret(ch,t) = std(x(:));
+					end
+				end
+				imagesc(ret);
+				colorbar;
+
+				return;
+			end
+			ret=[];
+		end
+
+		function pcsdViewer(this, pcsda)
+			%Show both full field and checkerboard stimuli
+			if (nargin <= 1)
+				this.loadPrototype();
+				this.pcsdViewer(this.pcsdffa);
+				this.pcsdViewer(this.pcsdca);
+				return;
+			end
+
+			loader = CSDLoader;
+
+			csd = loader.load(pcsda.testName);
+			csd.data = mean(csd.data, 3);
+			figure;
+			imagesc(csd.data);
+			title([csd.testName ' - ' csd.stimulusObject.TextureType]);
+			xlabel('Time (ms)');
+			ylabel('Channel');
+			hold on;
+			rect = [pcsda.tWindow(1) ...
+					pcsda.chWindow(1) ...
+					pcsda.tWindow(end)-pcsda.tWindow(1) ...
+					pcsda.chWindow(end)-pcsda.chWindow(1)];
+			rectangle('position',rect+[-.5 -.5 0 0],'LineWidth',1);
+		end
+
+		%CSD Window (alignment) viewer
+		%run() must be called first.
+		function alignmentViewer(this)
+			dir=[Const.RESULT_DIRECTORY pathname(class(this), this.expName, 'Covariance')];
+			cd(dir);
+
+			load('results.mat');
+			csda = results(this.testName);
+
+			loader=CSDLoader;
+			csd=loader.load(this.testName);
+
+			csd.data = mean(csd.data, 3);
+			csd.data = csd.data(:,1:500) + csd.data(:,501:1000) + csd.data(:,1001:1500) + csd.data(:,1501:2000);
+
+			figure;
+			imagesc(csd.data, [-45 45]);
+			colorbar;
+			title([csd.testName ' - ' csd.stimulusObject.TextureType]);
+			xlabel('Time (ms)');
+			ylabel('Channel');
+			hold on;
+			rect = [csda.tWindow(1) ...
+					csda.chWindow(1) ...
+					csda.tWindow(end)-csda.tWindow(1) ...
+					csda.chWindow(end)-csda.chWindow(1)];
+			rectangle('position',rect+[-.5 -.5 0 0],'LineWidth',2);
 		end
 	end
 	methods (Access = private)
@@ -160,7 +272,11 @@ classdef test4 < handle
 
 			%Create alignment object to be returned
 			ret=CSDAlignment;
-			ret.chWindow=this.pcsda.chWindow-this.pcsda.chWindow-bestCh;
+			ret.expName=this.expName;
+			ret.testName=this.testName;
+			ret.insertion=Const.INSERTION(this.expName,this.testName);
+			ret.chWindow=this.pcsda.chWindow-this.pcsda.chWindow(1)+bestCh;
+			ret.tWindow=this.pcsda.tWindow-this.pcsda.tWindow(1)+bestT;
 			ret.firstChannel=bestCh+(this.pcsda.firstChannel-this.pcsda.chWindow(1)); %TODO: Check math
 
 			%Make pretties and save it to a file

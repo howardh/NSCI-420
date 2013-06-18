@@ -1,6 +1,6 @@
 function ret=main()
-	addpath '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-	onCleanup(@() cd('\\132.216.58.64\f\SummerStudents\Howard\Scripts'));
+	addpath(Const.SCRIPT_DIRECTORY);
+	onCleanup(@() cd(Const.SCRIPT_DIRECTORY));
 
 	%convertAllData();
 
@@ -10,9 +10,17 @@ function ret=main()
 	%run('test2');
 	%run('test3');
 	%clr('test4');
-	run('test4');
+	%run('test4');
+	%run('test5');
 
-	%runAll();
+	%x=test4;
+	%x.testName='071';
+	%x.stdViewer();
+	%x.pcsdViewer();
+	%x.testName='071';
+	%x.alignmentViewer();
+
+	runAll();
 end
 
 function ret=run(scriptName)
@@ -80,7 +88,7 @@ function createImages()
 					saveas(h, [path x{i} '.fig'], 'fig');
 					saveas(h, [path x{i} '.png'], 'png');
 				else
-					disp('Not grating. Skipping.');
+					disp('Not grating or CSDMapping. Skipping.');
 				end
 			catch exception
 				disp(' some error occurred');
@@ -119,25 +127,6 @@ function ret=convertData(experiment, testName)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	Alignment (Incomplete)
-
-function ret=bar()
-    data={'143', '145'};
-
-    loader=CSDLoader;
-
-    ret=containers.Map;
-    name='name';
-    for i=1:length(data)
-        csdi=loader.load(data{i});
-        for j=i+1:length(data)
-            csdj=loader.load(data{j});
-            ret(name)=CSDMappingAligner(csdi,csdj,name);
-        end
-    end
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do everything
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -148,4 +137,5 @@ function ret=runAll()
 	run('test2');
 	run('test3');
 	run('test4');
+	run('test5');
 end
