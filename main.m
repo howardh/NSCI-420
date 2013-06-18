@@ -14,9 +14,11 @@ function ret=main()
 	%run('test5');
 
 	x=test4;
-	%x.pcsdViewer();
 	x.testName='071';
-	x.alignmentViewer();
+	x.stdViewer();
+	%x.pcsdViewer();
+	%x.testName='071';
+	%x.alignmentViewer();
 
 	%runAll();
 end
@@ -125,25 +127,6 @@ function ret=convertData(experiment, testName)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	Alignment (Incomplete)
-
-function ret=bar()
-    data={'143', '145'};
-
-    loader=CSDLoader;
-
-    ret=containers.Map;
-    name='name';
-    for i=1:length(data)
-        csdi=loader.load(data{i});
-        for j=i+1:length(data)
-            csdj=loader.load(data{j});
-            ret(name)=CSDMappingAligner(csdi,csdj,name);
-        end
-    end
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do everything
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -154,4 +137,5 @@ function ret=runAll()
 	run('test2');
 	run('test3');
 	run('test4');
+	run('test5');
 end
