@@ -25,6 +25,24 @@
 
 * Aligns the CSD of all full field and checkerboard stimuli to their respective prototypical CSD
 	* Prototypical CSD used can be modified in the loadPrototype() method
+* Misc methods
+	* stdViewer
+		* Usage:
+			* set test4.expName and test4.testName
+			* run test4.stdViewer
+		* Output
+			* A figure showing the standard deviation of the data points within each possible window of the CSD data
+			* The size of the window is the same as that which is used in the alignment
+	* pcsdViewer
+		* Usage:
+			* run test4.pcsdViewer
+	* alignmentViewer
+		* Usage:
+			* run test4.run() to generate the results.mat
+			* set test4.expName and test4.testName to the test whose alignment you want to see
+			* run test4.alignmentViewer
+		* Output
+			* The CSD data of the given experiment and test, with a box around the window aligned with the prototypical CSD data.
 * Files generated
 	* Saves an image for each comparison
 	* results.mat (test4/expName/)
