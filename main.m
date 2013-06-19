@@ -20,7 +20,8 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	run('test5');
+	createImages();
+	%run('test5');
 
 	%runAll();
 end
@@ -68,7 +69,7 @@ function createImages()
 					h=figure;
 					set(h,'Visible','off');
 					output=mean(mean(csd.data(:,[1000:1200],:,:),3),4);
-					imagesc(output);
+					imagesc(output, [-45 45]);
 					ylabel('Channels');
 					xlabel('Time (ms)');
 					colorbar;

@@ -6,6 +6,12 @@
 * Some statistical analysis stuff
 
 ## Test3
+
+* Incomplete/wrong
+* Same as test2, but with a paired sample t-test
+	* Every trials from one test is compared to every trial of another
+	* Times can be matched to one another, but what about trials?
+
 ## Test4
 
 * Aligns the CSD of all full field and checkerboard stimuli to their respective prototypical CSD
