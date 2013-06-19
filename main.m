@@ -1,18 +1,29 @@
 function ret=main()
-	addpath '\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-	onCleanup(@() cd('\\132.216.58.64\f\SummerStudents\Howard\Scripts'));
+	addpath(Const.SCRIPT_DIRECTORY);
+	onCleanup(@() cd(Const.SCRIPT_DIRECTORY));
 
 	%convertAllData();
 
 	%createImages();
 
-	clr('test2');
-	run('test2');
+	%clr('test2');
+	%run('test2');
 	%run('test3');
 	%clr('test4');
 	%run('test4');
+	%run('test5');
 
-	runAll();
+	%x=test4;
+	%x.testName='071';
+	%x.stdViewer();
+	%x.pcsdViewer();
+	%x.testName='071';
+	%x.alignmentViewer();
+
+	createImages();
+	%run('test5');
+
+	%runAll();
 end
 
 function ret=run(scriptName)
@@ -36,11 +47,11 @@ function createImages()
 		x=Const.ALL_TESTS(expName);
 		loader.expName=expName;
 		for i=1:length(x)
-			disp(['Creating tuning curve ' x{i}]);
 			try
 				csd=loader.load(x{i});
 				if csd.isGrating()
 					%Create figure (Tuning curve)
+					disp(['Creating tuning curve ' x{i}]);
 					h=figure;
 					set(h,'Visible','off');
 					imagesc(csd.tuningCurve);
@@ -58,7 +69,7 @@ function createImages()
 					h=figure;
 					set(h,'Visible','off');
 					output=mean(mean(csd.data(:,[1000:1200],:,:),3),4);
-					imagesc(output);
+					imagesc(output, [-45 45]);
 					ylabel('Channels');
 					xlabel('Time (ms)');
 					colorbar;
@@ -70,17 +81,17 @@ function createImages()
 					%Create figure (CSD)
 					h=figure;
 					set(h,'Visible','off');
-					imagesc(csd.data);
+					imagesc(mean(csd.data,3));
+					title(['CSDMapping ' x{i}]);
 					ylabel('Channels');
 					xlabel('Time (ms)');
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('CSD Mapping', expName)];
 					mkdir(path);
-					saveas(h, [path x{i} '.fig'], 'fig');
-					saveas(h, [path x{i} '.png'], 'png');
+					saveas(h, [path x{i} '.' figFormat], figFormat);
 				else
-					disp('Not grating. Skipping.');
+					disp('Not grating or CSDMapping. Skipping.');
 				end
 			catch exception
 				disp(' some error occurred');
@@ -119,25 +130,6 @@ function ret=convertData(experiment, testName)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	Alignment (Incomplete)
-
-function ret=bar()
-    data={'143', '145'};
-
-    loader=CSDLoader;
-
-    ret=containers.Map;
-    name='name';
-    for i=1:length(data)
-        csdi=loader.load(data{i});
-        for j=i+1:length(data)
-            csdj=loader.load(data{j});
-            ret(name)=CSDMappingAligner(csdi,csdj,name);
-        end
-    end
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Do everything
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -148,4 +140,5 @@ function ret=runAll()
 	run('test2');
 	run('test3');
 	run('test4');
+	run('test5');
 end
