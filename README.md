@@ -1,9 +1,16 @@
 # NSCI-420
 
 ## Test1
+
+* Statistical analysis
+* Two tailed test to show where a significant difference is found
+
 ## Test2
 
-* Some statistical analysis stuff
+* Statistical analysis
+* Basically a two tailed test, but shows the direction of the difference using colours
+* Files generated:
+	* ...
 
 ## Test3
 
@@ -11,6 +18,8 @@
 * Same as test2, but with a paired sample t-test
 	* Every trials from one test is compared to every trial of another
 	* Times can be matched to one another, but what about trials?
+* Files generated:
+	* ...
 
 ## Test4
 
