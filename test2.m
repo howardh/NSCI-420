@@ -25,13 +25,22 @@ classdef test2
 				%Every test within that experiment
 				for tn=1:length(testNames)
 					this.testName = testNames{tn};
+					isGrating = 1;
 					%Every possible time subdivision
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
 						for a=2:10
 							this.alpha = 10^-a;
-   							this.runOnce();
+   							isGrating=this.runOnce();
+							%If the current test is not a grating stimulus, skip
+							if ~isGrating
+								break;
+							end
+						end
+						%If the current test is not a grating stimulus, skip
+						if ~isGrating
+							break;
 						end
 						%And plot the p values too
 						this.alpha = 0;
@@ -48,6 +57,7 @@ classdef test2
 		%	x axis = orientation (each represents one of the 8 figures above, averaged across orientations)
 		%	y axis = channel
 		function ret=runOnce(this)
+			ret=1;
 			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName, num2str(this.timeSubdiv), num2str(-log10(this.alpha))) ];
 			cdforce(dir);
 
@@ -60,8 +70,10 @@ classdef test2
 				csd=loader.load(this.testName);
 				if ~csd.isGrating()
 					disp('Not a grating stimulus. Skipping and cleaning up.');
+					cd(pathname('..', '..', '..')); %Leave the directory we're deleting
 					dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName) ];
 					rmdir(dir,'s');
+					ret=0;
 					return;
 				end
 				%Set parameters
