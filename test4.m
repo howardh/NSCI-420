@@ -105,7 +105,7 @@ classdef test4 < handle
 					this.pcsd=this.pcsdc;
 					this.pcsda=this.pcsdca;
 				end
-				%csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
+				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
 
 				s=size(csd.data)-size(this.pcsd.data);
 				ret=zeros(s(1:2));

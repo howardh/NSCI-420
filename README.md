@@ -21,6 +21,7 @@
 
 * Requires having run Test4 first (Uses the generated .mat file)
 * Interpolates the results to find the alignment for grating stimulus runs
+	* Done using linear interpolation and rounding (Seems to work better than spline or nearest neighbour)
 * Files generated:
 	* results.mat (test5/expName/Covariance/)
 	* Plot for each insertion (test5/expName/)

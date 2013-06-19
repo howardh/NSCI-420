@@ -20,7 +20,9 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	runAll();
+	run('test5');
+
+	%runAll();
 end
 
 function ret=run(scriptName)
@@ -44,11 +46,11 @@ function createImages()
 		x=Const.ALL_TESTS(expName);
 		loader.expName=expName;
 		for i=1:length(x)
-			disp(['Creating tuning curve ' x{i}]);
 			try
 				csd=loader.load(x{i});
 				if csd.isGrating()
 					%Create figure (Tuning curve)
+					disp(['Creating tuning curve ' x{i}]);
 					h=figure;
 					set(h,'Visible','off');
 					imagesc(csd.tuningCurve);
@@ -78,15 +80,15 @@ function createImages()
 					%Create figure (CSD)
 					h=figure;
 					set(h,'Visible','off');
-					imagesc(csd.data);
+					imagesc(mean(csd.data,3));
+					title(['CSDMapping ' x{i}]);
 					ylabel('Channels');
 					xlabel('Time (ms)');
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('CSD Mapping', expName)];
 					mkdir(path);
-					saveas(h, [path x{i} '.fig'], 'fig');
-					saveas(h, [path x{i} '.png'], 'png');
+					saveas(h, [path x{i} '.' figFormat], figFormat);
 				else
 					disp('Not grating or CSDMapping. Skipping.');
 				end
