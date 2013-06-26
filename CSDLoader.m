@@ -11,28 +11,39 @@ classdef CSDLoader
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		%	Loads everything
         function ret=load(this,testName)
-			%If the file already exists, then load it
+			fSave = false; %If true, then the data is saved at the end
+
 			fileName=[Const.DATA_DIRECTORY pathname(this.expName) testName '.mat'];
 			if exist(fileName, 'file')
+				%If the file already exists, then load it
 				disp(['File ' testName ' already exists. Loading from file.']);
 				x=load(fileName);
 				ret=x.this;
-				return;
+			else
+				%Otherwise, load the data from Martin's script and save it
+				disp(['File ' testName ' does not exist. Creating file.']);
+				ret=CSDData;
+				ret.testName=testName;
+				ret.expName=this.expName;
+				ret.data=this.loadData(testName);
+				ret.stimulus=this.loadStimulus(testName);
+				ret.stimulusObject=this.loadStimulusObject(testName);
+				if (strcmp(ret.stimulus, 'Gratings') == 1)
+					ret.tuningCurve=this.loadTuningCurve(testName);
+				end
+				fSave = true;
 			end
 
-			%Otherwise, load the data from Martin's script and save it
-			disp(['File ' testName ' does not exist. Creating file.']);
-            ret=CSDData;
-            ret.testName=testName;
-			ret.expName=this.expName;
-            ret.data=this.loadData(testName);
-            ret.stimulus=this.loadStimulus(testName);
-            ret.stimulusObject=this.loadStimulusObject(testName);
-			if (strcmp(ret.stimulus, 'Gratings') == 1)
-				ret.tuningCurve=this.loadTuningCurve(testName);
+			%Load the alignment if it isn't already loaded and saved
+			if (isempty(ret.alignment))
+				ret.alignment=this.loadAlignment(testName);
+				fSave = true;
 			end
-			ret.alignment=this.loadAlignment(testName);
-			ret.save();
+
+			%If a change was made to the data, save it
+			if (fSave)
+				ret.save();
+			end
         end
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		%	Loads alignment for all tests in this experiment
