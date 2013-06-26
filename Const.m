@@ -5,6 +5,9 @@ classdef Const
 		DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
 		FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
 		RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+
+		ALIGNMENT_DIRECTORY = [Const.DATA_DIRECTORY 'test4\'];
+
 		%SCRIPT_DIRECTORY =	'~/Documents/MATLAB/Scripts/';
 		%DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
 		%FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';

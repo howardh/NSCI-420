@@ -2,17 +2,6 @@ function ret=main()
 	addpath(Const.SCRIPT_DIRECTORY);
 	onCleanup(@() cd(Const.SCRIPT_DIRECTORY));
 
-	%convertAllData();
-
-	%createImages();
-
-	%clr('test2');
-	%run('test2');
-	%run('test3');
-	%clr('test4');
-	%run('test4');
-	%run('test5');
-
 	%x=test4;
 	%x.testName='071';
 	%x.stdViewer();
@@ -20,8 +9,12 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	createImages();
-	%run('test5');
+	%run('test2');
+
+	x=test4
+	x.pcsdViewer();
+	x.testName='071';
+	x.alignmentViewer();
 
 	%runAll();
 end

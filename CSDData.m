@@ -6,6 +6,8 @@ classdef CSDData
         data		%CSD data
 		tuningCurve %Tuning curve data
 
+		alignment;	%CSDAlignment object
+
         stimulus
         prefOrientation
         stimulusObject
