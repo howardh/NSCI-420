@@ -56,8 +56,8 @@ classdef test2
 		%Mean figure
 		%	x axis = orientation (each represents one of the 8 figures above, averaged across orientations)
 		%	y axis = channel
-		function ret=runOnce(this)
-			ret=1;
+		function isGrating=runOnce(this)
+			isGrating=1;
 			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName, num2str(this.timeSubdiv), num2str(-log10(this.alpha))) ];
 			cdforce(dir);
 
@@ -73,7 +73,7 @@ classdef test2
 					cd(pathname('..', '..', '..')); %Leave the directory we're deleting
 					dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName) ];
 					rmdir(dir,'s');
-					ret=0;
+					isGrating=0;
 					return;
 				end
 				%Set parameters
