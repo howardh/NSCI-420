@@ -11,10 +11,17 @@ function ret=main()
 
 	%run('test2');
 
-	x=test4
-	x.pcsdViewer();
-	x.testName='071';
-	x.alignmentViewer();
+	%Meeting 2013.06.27
+	%x=test4
+	%x.testName='071';
+	%x.stdViewer()
+	%x.pcsdViewer();
+	%x.alignmentViewer();
+
+	loader=CSDLoader;
+	csd1=loader.load('077');
+	csd2=loader.load('082');
+	combineCSD(csd1,csd2);
 
 	%runAll();
 end
