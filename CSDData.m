@@ -8,7 +8,7 @@ classdef CSDData
 					% Grating: 32 * 3501 * 20 * 16
 		tuningCurve %Tuning curve data
 
-		alignment;	%CSDAlignment object
+		alignment = CSDAlignment;	%CSDAlignment object
 
         stimulus
         prefOrientation
