@@ -1,10 +1,16 @@
 %Class containing constants used in the scripts
 classdef Const
 	properties (Constant)
-		SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-		DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
-		FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
-		RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+		%%SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
+		%SCRIPT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Scripts\';
+		%DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
+		%FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
+		%RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+
+		SCRIPT_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Scripts')];
+		DATA_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('CSDData')];
+		FIGURE_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Figures')];
+		RESULT_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Results')];
 
 		ALIGNMENT_DIRECTORY = [Const.DATA_DIRECTORY 'test4\'];
 
@@ -23,6 +29,13 @@ classdef Const
 		end
 	end
 	methods (Static)
+		function ret=ROOT_DIRECTORY()
+			if (isunix())
+				ret='~/Documents/MATLAB/';
+			else
+				ret='C:\Users\labuser 2\Documents\MATLAB\';
+			end
+		end
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
 			ret={'065'};
