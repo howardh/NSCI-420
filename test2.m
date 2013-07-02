@@ -12,12 +12,16 @@ classdef test2
 		
 		alpha=0.001;
 
+		fFDR = true; %If true, will correct for false discovery
+
 		tests={'ttest', 'ttest paired'}
 	end
 	methods
 		%Runs everything
 		function run(this)
-			divs=[10,20,40,50,100,200];
+			%divs=[10,20,40,50,100,200];
+			%divs=[10,40,50,200];
+			divs=[200];
 			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
@@ -30,13 +34,20 @@ classdef test2
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						for a=2:10
+						for a=1:5
 							this.alpha = 10^-a;
-   							isGrating=this.runOnce();
-							%If the current test is not a grating stimulus, skip
-							if ~isGrating
-								break;
+							%Perform tests with and without false discovery correction
+							for fdr=[true false]
+								this.fFDR = fdr;
+								isGrating=this.runOnce();
+								%If the current test is not a grating stimulus, skip
+								if ~isGrating
+									break;
+								end
 							end
+
+							%If the current test is not a grating stimulus, skip
+							if (~isGrating) break; end;
 						end
 						%If the current test is not a grating stimulus, skip
 						if ~isGrating
@@ -93,6 +104,11 @@ classdef test2
 			%Load the color map
 			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
 
+			%Check for false discovery
+			if (this.fFDR & this.alpha ~= 0)
+				this.alpha = this.correctFalseDiscovery(abs(ret(:)));
+			end
+
 			%Plot p-values and t statistics
 			if (this.alpha == 0)
 				%p-values
@@ -122,6 +138,8 @@ classdef test2
 
 				%t statistics
 				for x=1:8
+					%size(tStat)
+					tStat=mean(tStat,4);
 					output=squeeze(tStat(x,:,:));
 					h=figure;
 					set(h,'Visible','off');
@@ -161,11 +179,15 @@ classdef test2
 				set(h,'Visible','off');
 				imagesc(output,[-1 1]);
 				colormap(cmap);
-				title([this.expName ' ' this.testName '\_' num2str(x)]);
+				title([this.expName ' ' this.testName '\_' num2str(x) ' \alpha=' num2str(this.alpha)]);
 				xlabel('Orientation');
 				ylabel('Channel');
 				colorbar;
-				saveas(h,[num2str(x) '.' this.figFormat], this.figFormat);
+				fileName = num2str(x);
+				if (this.fFDR)
+					fileName = ['FDR' fileName];
+				end
+				saveas(h,[fileName '.' this.figFormat], this.figFormat);
 			end
 
 			%Average over orientations
@@ -176,11 +198,15 @@ classdef test2
 			set(h,'Visible','off');
 			imagesc(transpose(output), [-1 1]);
 			colormap(cmap);
-			title([this.expName ' ' this.testName ' mean']);
+			title([this.expName ' ' this.testName ' mean \alpha=' num2str(this.alpha)]);
 			xlabel('Orientation');
 			ylabel('Channel');
 			colorbar;
-			saveas(h,['mean.' this.figFormat], this.figFormat);
+			fileName = 'mean';
+			if (this.fFDR)
+				fileName = ['FDR' fileName];
+			end
+			saveas(h,[fileName '.' this.figFormat], this.figFormat);
 		end
 
 		function clear(this)
@@ -250,6 +276,31 @@ classdef test2
 				p=-p;
 			end
 			t=-s.tstat;
+		end
+
+		%Returns the alpha value to use after false discovery rate correction
+		function alpha=correctFalseDiscovery(this, p)
+			p=sort(p);
+
+			%Benjamini-Hochberg
+			m=length(p);
+			q=0.3;
+			alpha=0;
+			for i=1:m
+				if (p(i) <= i/m*q)
+					continue;
+				end
+				alpha = (p(i-1)+p(i))/2;
+				break;
+			end
+
+			%%Sort and plot p-values (Debugging purposes)
+			%y=sort(abs(p(:)));
+			%h=figure;
+			%plot(1:length(y),y);
+			%title([num2str(a)]);
+			%hold on;
+			%plot(1:length(y),[1:length(y)]/m*q);
 		end
 	end
 end
