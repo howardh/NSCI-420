@@ -24,7 +24,8 @@ classdef test4 < handle
 			%Load prototypical CSD
 			this.loadPrototype();
 			%Use both correlation and covariance
-			for uc=0:1
+			%for uc=0:1
+			for uc=0
 				this.useCorr=uc; %wtf, why can't I just loop using this instead of uc?
 
 				%Every experiment
@@ -76,7 +77,7 @@ classdef test4 < handle
 					this.pcsd=this.pcsdc;
 					this.pcsda=this.pcsdca;
 				end
-				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
+				csd.data=csd.data(:,1000:1200,:,:);
 				ret=this.align(csd);
 				return;
 			end
@@ -105,7 +106,7 @@ classdef test4 < handle
 					this.pcsd=this.pcsdc;
 					this.pcsda=this.pcsdca;
 				end
-				csd.data=(csd.data(:,1:500,:,:)+csd.data(:,501:1000,:,:)+csd.data(:,1001:1500,:,:)+csd.data(:,1501:2000,:,:))/4;
+				csd.data=csd.data(:,1000:1200,:,:);
 
 				s=size(csd.data)-size(this.pcsd.data);
 				ret=zeros(s(1:2));
@@ -166,7 +167,7 @@ classdef test4 < handle
 			csd=loader.load(this.testName);
 
 			csd.data = mean(csd.data, 3);
-			csd.data = csd.data(:,1:500) + csd.data(:,501:1000) + csd.data(:,1001:1500) + csd.data(:,1501:2000);
+			csd.data=csd.data(:,1000:1200,:,:);
 
 			figure;
 			imagesc(csd.data, [-45 45]);

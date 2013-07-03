@@ -9,7 +9,7 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	%run('test2');
+	run('test4');
 
 	%Meeting 2013.06.27
 	%x=test4
@@ -18,10 +18,10 @@ function ret=main()
 	%x.pcsdViewer();
 	%x.alignmentViewer();
 
-	loader=CSDLoader;
-	csd1=loader.load('077');
-	csd2=loader.load('082');
-	combineCSD(csd1,csd2);
+	%loader=CSDLoader;
+	%csd1=loader.load('077');
+	%csd2=loader.load('082');
+	%combineCSD(csd1,csd2);
 
 	%runAll();
 end
