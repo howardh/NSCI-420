@@ -9,7 +9,7 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	run('test5');
+	%run('test5');
 
 	%Meeting 2013.06.27
 	%x=test4
@@ -22,6 +22,8 @@ function ret=main()
 	%csd1=loader.load('077');
 	%csd2=loader.load('082');
 	%combineCSD(csd1,csd2);
+
+	createImages();
 
 	%runAll();
 end
@@ -81,7 +83,7 @@ function createImages()
 					%Create figure (CSD)
 					h=figure;
 					set(h,'Visible','off');
-					imagesc(mean(csd.data,3));
+					imagesc(mean(csd.data,3), [-45 45]);
 					title(['CSDMapping ' x{i}]);
 					ylabel('Channels');
 					xlabel('Time (ms)');
