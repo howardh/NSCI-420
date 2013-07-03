@@ -1,6 +1,6 @@
 %GetDataInfo
 ExpName= '12mv1211';
-TestName = '048';
+TestName = '067';
 
 % DataFolder
 DataFolder =['\\132.216.58.64\f\Martin\' ExpName '\Electro\Analyzed Data\'];

@@ -1,10 +1,11 @@
 %% CSDViewer
 % shows the CSD and save the image with FileName in eps in ResultFolder
 ExpName='12mv1211';
-TestName = '104';
+TestName = '067';
 % FileName= 'CSD_054.eps';
 %Conditions = [1:16];
-Conditions = [1:16];
+%Conditions = [1:16];
+Conditions = [1];
 Range = [-45 45]; 
 window=(1000:1200); 
 Trials = []; %if empty it just computes the mean
@@ -56,7 +57,7 @@ end
 Mat = mean(CSDMeanMat,3);
 figure
 %imagesc(Mat(:, window),Range);
-imagesc(Mat(:, window));
+imagesc(Mat);
 title([num2str(ExpName) 'test ' num2str(TestName)]);
 xlabel('Time (msec)');
 ylabel('Channels');

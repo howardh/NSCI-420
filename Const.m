@@ -1,10 +1,19 @@
 %Class containing constants used in the scripts
 classdef Const
 	properties (Constant)
-		SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-		DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
-		FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
-		RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+		%%SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
+		%SCRIPT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Scripts\';
+		%DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
+		%FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
+		%RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
+
+		SCRIPT_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Scripts')];
+		DATA_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('CSDData')];
+		FIGURE_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Figures')];
+		RESULT_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Results')];
+
+		ALIGNMENT_DIRECTORY = [Const.DATA_DIRECTORY 'test4\'];
+
 		%SCRIPT_DIRECTORY =	'~/Documents/MATLAB/Scripts/';
 		%DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
 		%FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';
@@ -20,12 +29,19 @@ classdef Const
 		end
 	end
 	methods (Static)
+		function ret=ROOT_DIRECTORY()
+			if (isunix())
+				ret='~/Documents/MATLAB/';
+			else
+				ret='C:\Users\labuser 2\Documents\MATLAB\';
+			end
+		end
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
-			%ret={'065'};
+			ret={'065'};
 			%ret={'044'};
 			%ret={'137'};
-			%return;
+			return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
 				%TODO: Removed 034, 059, 066, 074, 075, 086, 088, 091, 092, 093, 094, 096, 105, 113, 115, 125, 138, 146. Don't know why it won't load.
