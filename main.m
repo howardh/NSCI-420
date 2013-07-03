@@ -9,7 +9,7 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	run('test4');
+	run('test5');
 
 	%Meeting 2013.06.27
 	%x=test4

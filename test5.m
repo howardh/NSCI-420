@@ -55,6 +55,7 @@ classdef test5 < handle
 
 			%Compute missing values
 			ch2=interp1(t,ch,t2,'linear');
+			ch2=round(ch2);
 
 			%Extract the values we need to be returned
 			ret=[];
