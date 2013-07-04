@@ -136,6 +136,12 @@ classdef test2
 					saveas(h,['p' num2str(x) '.' this.figFormat], this.figFormat);
 				end
 
+				%Sort and plot p-values
+				y=sort(ret(:));
+				h=figure;
+				plot(1:length(y),y);
+				saveas(h,['pp' num2str(x) '.' this.figFormat], this.figFormat);
+
 				%t statistics
 				for x=1:8
 					%size(tStat)

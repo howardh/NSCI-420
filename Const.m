@@ -38,10 +38,10 @@ classdef Const
 		end
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
-			ret={'065'};
+			%ret={'065'};
 			%ret={'044'};
-			%ret={'137'};
-			%return;
+			ret={'133'};
+			return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
 				%TODO: Removed 034, 059, 066, 074, 075, 086, 088, 091, 092, 093, 094, 096, 105, 113, 115, 125, 138, 146. Don't know why it won't load.
@@ -110,6 +110,12 @@ classdef Const
 							ret=[30];
 						case '104'
 							ret=[17];
+						case '132'
+							ret=[12];
+						case '133'
+							ret=[18 22];
+						case '134'
+							ret=[18 22];
 						otherwise
 							ret=[23];
 					end
