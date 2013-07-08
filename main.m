@@ -13,7 +13,7 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	run('test6');
+	run('test5');
 	%ret = ClassificationDiscriminant.fit(rand(10,20),[zeros(1,7) ones(1,3)])
 	%load('tsx.mat');
 	%load('tsy.mat');
