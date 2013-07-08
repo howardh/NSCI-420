@@ -40,13 +40,14 @@ classdef Const
 			%FIXME: Temporary, for debugging purposes
 			%ret={'065'};
 			%ret={'044'};
-			ret={'133'};
-			return;
+			%ret={'133'};
+			%return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
 				%TODO: Removed 034, 059, 066, 074, 075, 086, 088, 091, 092, 093, 094, 096, 105, 113, 115, 125, 138, 146. Don't know why it won't load.
 				%	130 gave a different error when loading after it was done interpolating
-				ret={'024', '025', '033', '035', '038', '042', '043', '044', '045', ... %Insertion 1
+				%	Bad data: 025, 035
+				ret={'024', '033', '038', '042', '043', '044', '045', ... %Insertion 1
 					'046', '048', '049', '050', '053', '054', ... %Insertion 2
 					'056', '057', '058', '060', '061', ... %Insertion 4
 					'062', '063', '065', '067', '068', ... %Insertion 5

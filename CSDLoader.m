@@ -35,7 +35,7 @@ classdef CSDLoader
 			end
 
 			%Load the alignment if it isn't already loaded and saved
-			if (isempty(ret.alignment))
+			if (isempty(ret.alignment.firstChannel))
 				ret.alignment=this.loadAlignment(testName);
 				fSave = true;
 			end
