@@ -58,3 +58,10 @@
 * Files generated:
 	* results.mat (test5/expName/Covariance/)
 	* Plot for each insertion (test5/expName/)
+
+## Test 6
+
+* Requires having run Test5 first (Uses the alignment data)
+* Creates a training set from all available grating stimuli runs
+	* Classification: 1 for prefered orientation, 0 for everything else
+* Takes 2 channels above the brain surface, and 16 channels within.
