@@ -22,6 +22,20 @@ classdef test6 < handle
 			%load('tsy.mat');
 			obj = ClassificationDiscriminant.fit(x,y);
 
+			label = transpose(predict(obj,x));
+
+			disp(['sum: ' num2str(sum(label))]);
+			disp(['actual sum: ' num2str(sum(y))]);
+			err=label-y;
+			err=err.*err;
+			disp(['Squared error: ' num2str(sum(err))]);
+			disp(['Mean Squared error: ' num2str(sum(err)/length(err))]);
+			x=(label==y & label==1);
+			disp(['Correct positives: ' num2str(sum(x))]);
+			x=(label==y & label==0);
+			disp(['Correct negatives: ' num2str(sum(x))]);
+
+
 			%for i=1:18
 			%	for j=i+1:18
 			%		h=figure;
@@ -105,12 +119,13 @@ classdef test6 < handle
 				end
 
 				%Subdivide time into smaller chunks
-				div=20; %parameter
+				div=35; %parameter (Size of time subdivisions)
+				inc=30;
 				tWindow=[1:div];
 				temp=[];
 				while (tWindow(end) <= 200)
 					temp = cat(1,temp,csd.data(:,tWindow,:,:));
-					tWindow = tWindow + div;
+					tWindow = tWindow + inc;
 				end
 
 				%Average over time
