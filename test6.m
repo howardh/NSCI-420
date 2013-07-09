@@ -15,7 +15,8 @@ classdef test6 < handle
 		end
 
 		function runOnce(this)
-			[xAll,yAll]=this.generateDataSet(3,12,0); %Entire data set
+			%[xAll,yAll]=this.generateDataSet(3,12,0); %Entire data set
+			[xAll,yAll]=this.generateDataSet(3,13,0); %Entire data set
 
 			totalError=0;
 			
