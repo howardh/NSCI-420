@@ -9,5 +9,7 @@ classdef CSDAlignment
 
 		firstChannel;	%First channel in the brain
 		lastChannel; 	%Last channel in the grey matter
+
+		stimulus; %Grating | Checkerboard | Fullfield
 	end
 end

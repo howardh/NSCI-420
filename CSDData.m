@@ -3,8 +3,12 @@ classdef CSDData
 		expName
         testName
 
-        data		%CSD data
+        data		%CSD data (Channel * Time * Trials [* Conditions])
+					% CSDMapping: 32 * 2001 * 300
+					% Grating: 32 * 3501 * 20 * 16
 		tuningCurve %Tuning curve data
+
+		alignment = CSDAlignment;	%CSDAlignment object
 
         stimulus
         prefOrientation

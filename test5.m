@@ -45,16 +45,25 @@ classdef test5 < handle
 			ch=[]; %First channels for the tests in t
 			t2=[]; %All channels for which we need values
 			ch2=[]; %Will contain the interpolated values
+			tG=[]; %Grating tests (used for plotting)
+			chG=[]; %Grating first channels (Used for plotting)
+			tC=[]; %Checkerboard tests (used for plotting)
+			chC=[]; %Checkerboard first channels (Used for plotting)
+			tF=[]; %Fullfield tests (used for plotting)
+			chF=[]; %Fullfield first channels (Used for plotting)
 			for i=1:length(tests)
 				if this.alignmentData.isKey(tests{i})
 					t = [t str2num(tests{i})];
 					ch = [ch this.alignmentData(tests{i}).firstChannel];
+				else
+					tG = [tG str2num(tests{i})];
 				end
 				t2 = [t2 str2num(tests{i})];
 			end
 
 			%Compute missing values
-			ch2=interp1(t,ch,t2);
+			ch2=interp1(t,ch,t2,'linear');
+			ch2=round(ch2);
 
 			%Extract the values we need to be returned
 			ret=[];
@@ -90,7 +99,9 @@ classdef test5 < handle
 			xlabel('Test Name');
 			ylabel('First Channel');
 			subplot(2,1,2); 
-			plot(t2,ch2,'-s');
+			plot(t2,ch2,'-');
+			hold on;
+			plot(t,ch,'s');
 			title('After Interpolation (CSDMapping + Gratings)');
 			xlabel('Test Name');
 			ylabel('First Channel');
