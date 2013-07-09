@@ -13,34 +13,7 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	run('test5');
-	%ret = ClassificationDiscriminant.fit(rand(10,20),[zeros(1,7) ones(1,3)])
-	%load('tsx.mat');
-	%load('tsy.mat');
-	%y = transpose(y);
-
-	%gscatter(x(:,13),x(:,17),y);
-	%legend('non-prefered','prefered');
-
-	%obj = ClassificationDiscriminant.fit(x,y);
-	%%load('vsx.mat');
-	%%load('vsy.mat');
-	%[label,score,cost] = predict(obj,x);
-	%cost
-	%size(y)
-	%size(label)
-
-	%Meeting 2013.06.27
-	%x=test4
-	%x.testName='071';
-	%x.stdViewer()
-	%x.pcsdViewer();
-	%x.alignmentViewer();
-
-	%loader=CSDLoader;
-	%csd1=loader.load('077');
-	%csd2=loader.load('082');
-	%combineCSD(csd1,csd2);
+	run('test6');
 
 	%createImages();
 
@@ -86,7 +59,7 @@ function createImages()
 					mkdir(path);
 					saveas(h, [path x{i} '.' figFormat], figFormat);
 
-					%Create figure (CSD)
+					%Create figure (CSD average)
 					h=figure;
 					set(h,'Visible','off');
 					output=mean(mean(csd.data(:,[1000:1200],:,:),3),4);
@@ -98,6 +71,22 @@ function createImages()
 					path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
 					mkdir(path);
 					saveas(h, [path x{i} '.' figFormat], figFormat);
+
+					%Create figure (CSD per condition)
+					csd.data = csd.avgConditions();
+					for cond=1:8
+						h=figure;
+						set(h,'Visible','off');
+						output=mean(csd.data(:,[1000:1200],:,cond),3);
+						imagesc(output, [-45 45]);
+						ylabel('Channels');
+						xlabel('Time (ms)');
+						colorbar;
+						%Save figure
+						path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
+						mkdir(path);
+						saveas(h, [path x{i} '-cond' num2str(cond) '.' figFormat], figFormat);
+					end
 				elseif csd.isCSDMapping()
 					%Create figure (CSD)
 					h=figure;
