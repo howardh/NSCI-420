@@ -63,5 +63,6 @@
 
 * Requires having run Test5 first (Uses the alignment data)
 * Creates a training set from all available grating stimuli runs
-	* Classification: 1 for prefered orientation, 0 for everything else
-* Takes 2 channels above the brain surface, and 16 channels within.
+	* Classification: 1 for prefered orientation, 0 for non-prefered orientation
+* Takes ? channels above the brain surface, and ? channels within.
+* Outputs: ???
