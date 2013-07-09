@@ -15,57 +15,41 @@ classdef test6 < handle
 		end
 
 		function runOnce(this)
-			[x,y]=this.generateDataSet(2,18,0); %Training set
-			save('tsx.mat','x');
-			save('tsy.mat','y');
-			%load('tsx.mat');
-			%load('tsy.mat');
-			obj = ClassificationDiscriminant.fit(x,y);
+			[xAll,yAll]=this.generateDataSet(3,12,0); %Entire data set
 
-			label = transpose(predict(obj,x));
+			totalError=0;
+			
+			%For each validation set/point
+			for vsInd = 1:length(yAll)
+				%Training set
+				tsInd = 1:length(yAll); %Training set indices
+				tsInd(ismember(tsInd,vsInd)) = []; %Everything but validation set indices
 
-			disp(['sum: ' num2str(sum(label))]);
-			disp(['actual sum: ' num2str(sum(y))]);
-			err=label-y;
-			err=err.*err;
-			disp(['Squared error: ' num2str(sum(err))]);
-			disp(['Mean Squared error: ' num2str(sum(err)/length(err))]);
-			x=(label==y & label==1);
-			disp(['Correct positives: ' num2str(sum(x))]);
-			x=(label==y & label==0);
-			disp(['Correct negatives: ' num2str(sum(x))]);
+				%Train
+				x=xAll(tsInd,:);
+				y=yAll(tsInd);
+				obj = ClassificationDiscriminant.fit(x,y);
 
-
-			%for i=1:18
-			%	for j=i+1:18
-			%		h=figure;
-			%		set(h,'Visible','off');
-			%		gscatter(x(:,i),x(:,j),y,'rb','^o',[]);
-			%		%gscatter(x(:,i),x(:,j),y);
-			%		legend('non-prefered','prefered');
-			%		dir=[Const.RESULT_DIRECTORY pathname(class(this), 'scatter plots')];
-			%		mkdir(dir);
-			%		saveas(h,[dir num2str(i) '-' num2str(j) '.' this.figFormat], this.figFormat);
-			%	end
-			%end
-
-			[x,y]=this.generateDataSet(2,18,1); %Validation set
-			save('vsx.mat','x');
-			save('vsy.mat','y');
-			%load('vsx.mat');
-			%load('vsy.mat');
-			label = transpose(predict(obj,x))
-
-			disp(['sum: ' num2str(sum(label))]);
-			disp(['actual sum: ' num2str(sum(y))]);
-			err=label-y;
-			err=err.*err;
-			disp(['Squared error: ' num2str(sum(err))]);
-			disp(['Mean Squared error: ' num2str(sum(err)/length(err))]);
-			x=(label==y & label==1);
-			disp(['Correct positives: ' num2str(sum(x))]);
-			x=(label==y & label==0);
-			disp(['Correct negatives: ' num2str(sum(x))]);
+				%Validate
+				x=xAll(vsInd,:);
+				y=yAll(vsInd);
+				label = transpose(predict(obj,x));
+				
+				%Display results
+				disp(['sum: ' num2str(sum(label))]);
+				disp(['actual sum: ' num2str(sum(y))]);
+				err=label-y;
+				err=err.*err;
+				disp(['Squared error: ' num2str(sum(err))]);
+				disp(['Mean Squared error: ' num2str(sum(err)/length(err))]);
+				totalError = totalError + sum(err)/length(err);
+				x=(label==y & label==1);
+				disp(['Correct positives: ' num2str(sum(x))]);
+				x=(label==y & label==0);
+				disp(['Correct negatives: ' num2str(sum(x))]);
+			end
+			totalError = totalError/length(yAll);
+			disp(['Total error: ' num2str(totalError)]);
 		end
 
 		% @param above
@@ -97,7 +81,7 @@ classdef test6 < handle
 				end
 
 				%Cut out the window in time
-				tWindow=1001:1200;
+				tWindow=1000+40:1200-120;
 				csd.data = csd.avgConditions();
 				csd.data = csd.data(:,tWindow,:,:);
 
@@ -112,18 +96,19 @@ classdef test6 < handle
 				csd.data = csd.data(1:total,:,:,:);
 
 				%Cut out the window in trials
-				if (fValidation)
-					csd.data = csd.data(:,:,[1 end],:); %Use the first and last trial for validation
-				else
-					csd.data = csd.data(:,:,2:end-1,:);
-				end
+				%if (fValidation)
+				%	csd.data = csd.data(:,:,[1 end],:); %Use the first and last trial for validation
+				%else
+				%	csd.data = csd.data(:,:,2:end-1,:);
+				%end
 
 				%Subdivide time into smaller chunks
-				div=35; %parameter (Size of time subdivisions)
-				inc=30;
+				limit=length(tWindow);
+				div=length(tWindow); %parameter (Size of time subdivisions)
+				inc=div;
 				tWindow=[1:div];
 				temp=[];
-				while (tWindow(end) <= 200)
+				while (tWindow(end) <= limit)
 					temp = cat(1,temp,csd.data(:,tWindow,:,:));
 					tWindow = tWindow + inc;
 				end
