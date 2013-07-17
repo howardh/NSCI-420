@@ -16,7 +16,7 @@ classdef test6 < handle
 
 		function runOnce(this)
 			%[xAll,yAll]=this.generateDataSet(3,12,0); %Entire data set
-			[xAll,yAll]=this.generateDataSet(3,4,0); %Entire data set
+			[xAll,yAll]=this.generateDataSet(7,30,0); %Entire data set
 
 			totalError=0;
 			
@@ -119,7 +119,7 @@ classdef test6 < handle
 				%Average over time
 				temp=squeeze(mean(temp,2));
 
-				s = size(temp) % channels x trials x 8
+				s = size(temp); % channels x trials x 8
 
 				po = csd.getPrefOrientation();	%Prefered orientation
 				npo = mod(po+4-1,8)+1;			%Non-prefered orientation
@@ -138,7 +138,7 @@ classdef test6 < handle
 		end
 
 		function analyze(this)
-			[xAll,yAll]=this.generateDataSet(3,4,0); %Entire data set
+			[xAll,yAll]=this.generateDataSet(3,19,0); %Entire data set
 			size(xAll)
 			size(yAll)
 
@@ -155,10 +155,26 @@ classdef test6 < handle
 
 			mu0=mean(x0,1);
 			mu1=mean(x1,1);
+			muAll=mean(xAll,1);
 
-			cov0 = diag(cov(x0));
-			cov1 = diag(cov(x1));
-			covAll = diag(cov(xAll));
+			cov0 = (cov(x0));
+			cov1 = (cov(x1));
+			covAll = (cov(xAll));
+
+			w = inv(covAll)*(mu1-mu0)';
+
+			c = w*(mu0+mu1)/2;
+
+			%Display results
+			ch = [-3:-1 1:19-3];
+			for i=1:length(w)
+				disp(['Channel ' num2str(ch(i)) ':  ' 9 num2str(w(i))]);
+			end
+
+			w = inv(cov0+cov1)*(mu1-mu0)';
+			s1 = (w*(mu1-mu0))^2;
+			s2 = w' * (cov0+cov1) * w;
+			s1/s2
 		end
 
 		% @return
@@ -192,5 +208,8 @@ classdef test6 < handle
 			figure;
 			plot(1:length(tc), tc);
 		end
+	end
+
+	methods (access = private)
 	end
 end
