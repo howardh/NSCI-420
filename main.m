@@ -13,7 +13,16 @@ function ret=main()
 	%x.testName='071';
 	%x.alignmentViewer();
 
-	run('test6');
+	%run('test6');
+	%load('obj.mat');
+	%ret=obj;
+
+	%Grating tests: 44,48,58,65,73,77,82,85,95,104,121,137,145
+	loader=CSDLoader;
+	csd=loader.load('065');
+	x=test6;
+	%x.analyze();
+	x.evaluateTuningCurve(csd);
 
 	%createImages();
 

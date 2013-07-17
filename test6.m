@@ -16,7 +16,7 @@ classdef test6 < handle
 
 		function runOnce(this)
 			%[xAll,yAll]=this.generateDataSet(3,12,0); %Entire data set
-			[xAll,yAll]=this.generateDataSet(3,13,0); %Entire data set
+			[xAll,yAll]=this.generateDataSet(7,30,0); %Entire data set
 
 			totalError=0;
 			
@@ -51,6 +51,8 @@ classdef test6 < handle
 			end
 			totalError = totalError/length(yAll);
 			disp(['Total error: ' num2str(totalError)]);
+
+			save('obj.mat','obj');
 		end
 
 		% @param above
@@ -117,7 +119,7 @@ classdef test6 < handle
 				%Average over time
 				temp=squeeze(mean(temp,2));
 
-				s = size(temp) % channels x trials x 8
+				s = size(temp); % channels x trials x 8
 
 				po = csd.getPrefOrientation();	%Prefered orientation
 				npo = mod(po+4-1,8)+1;			%Non-prefered orientation
@@ -134,5 +136,80 @@ classdef test6 < handle
 			end
 			retX = transpose(retX);
 		end
+
+		function analyze(this)
+			[xAll,yAll]=this.generateDataSet(3,19,0); %Entire data set
+			size(xAll)
+			size(yAll)
+
+			x0=[];
+			x1=[];
+
+			for i=1:length(yAll)
+				if (yAll(i) == 0)
+					x0 = cat(1,x0,xAll(i,:));
+				else
+					x1 = cat(1,x1,xAll(i,:));
+				end
+			end
+
+			mu0=mean(x0,1);
+			mu1=mean(x1,1);
+			muAll=mean(xAll,1);
+
+			cov0 = (cov(x0));
+			cov1 = (cov(x1));
+			covAll = (cov(xAll));
+
+			w = inv(covAll)*(mu1-mu0)';
+
+			c = w*(mu0+mu1)/2;
+
+			%Display results
+			ch = [-3:-1 1:19-3];
+			for i=1:length(w)
+				disp(['Channel ' num2str(ch(i)) ':  ' 9 num2str(w(i))]);
+			end
+
+			w = inv(cov0+cov1)*(mu1-mu0)';
+			s1 = (w*(mu1-mu0))^2;
+			s2 = w' * (cov0+cov1) * w;
+			s1/s2
+		end
+
+		% @return
+		%	true (1)  - if the CSD is well tuned (tuning curve is good)
+		%	false (0) - if it is not well tuned
+		function ret=evaluateTuningCurve(this,csd)
+			tc = csd.tuningCurve;
+			tc = (tc(:,1:8)+tc(:,9:16))/2;
+			tc = mean(tc,1);
+
+			pref = csd.getPrefOrientation() + 8;
+
+			tc = [tc tc tc];
+
+			%Defaults to a good tuning curve
+			ret = 1;
+
+			%Find aspects of the curve that make it not well tuned
+			x1=tc(pref-1)/tc(pref);
+			x2=tc(pref+1)/tc(pref);
+			if (x1 > .9 | x2 > .9) %Must decrease enough on both sides of the peak
+				ret = 0;
+			end
+			x1=tc(pref-3)/tc(pref-2);
+			x2=tc(pref+4)/tc(pref+3);
+			if (x1 > 1.1 | x2 > 1.1) %Non-prefered orientation should be the min, or almost the min
+				ret = 0;
+			end
+
+			%Make pretties
+			figure;
+			plot(1:length(tc), tc);
+		end
+	end
+
+	methods (access = private)
 	end
 end
