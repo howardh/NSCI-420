@@ -2,10 +2,10 @@ classdef CSDLoader
     properties
         expName='12mv1211';
         conditions = [1:16];
-        %range = [-45 45]; 
-        %window=(1000:1200); 
         trials = []; %if empty it just computes the mean
-        %badChannels=[23];
+
+		%Flags (should all be false by default)
+		fReloadAlignment = 1;
     end
     methods
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +35,10 @@ classdef CSDLoader
 			end
 
 			%Load the alignment if it isn't already loaded and saved
-			if (isempty(ret.alignment.firstChannel))
+			if (isempty(ret.alignment))
+				ret.alignment = CSDAlignment;
+			end
+			if (isempty(ret.alignment.firstChannel) | this.fReloadAlignment)
 				ret.alignment=this.loadAlignment(testName);
 				fSave = true;
 			end

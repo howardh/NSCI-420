@@ -21,6 +21,7 @@ classdef test5 < handle
 				%Every insertion within that experiment
 				for ins=1:length(insertions)
 					this.insertion = insertions(ins);
+					disp(['Aligning insertion ' num2str(ins)]);
 					%Run
 					ret=this.runOnce();
 					%Store results
@@ -85,6 +86,7 @@ classdef test5 < handle
 					ret(end).testName = num2testname(t2(i2));
 					ret(end).insertion = this.insertion;
 					ret(end).firstChannel = ch2(i2);
+					ret(end).updateLayers();
 					%Next test
 					i2=i2+1;
 				end

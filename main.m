@@ -18,14 +18,17 @@ function ret=main()
 	%ret=obj;
 
 	%Grating tests: 44,48,58,65,73,77,82,85,95,104,121,137,145
-	loader=CSDLoader;
-	csd=loader.load('065');
-	x=test6;
+	%loader=CSDLoader;
+	%csd=loader.load('065');
+	%x=test6;
 	%x.analyze();
-	x.evaluateTuningCurve(csd);
+	%x.evaluateTuningCurve(csd);
 
-	%createImages();
+	%run('test5');
+	createImages();
 
+	%run('test4');
+	%run('test5');
 	%runAll();
 end
 
@@ -62,6 +65,8 @@ function createImages()
 					ylabel('Channels');
 					xlabel('Condition');
 					title(['Tuning Curve (Prefered orientation: ' num2str(csd.getPrefOrientation()) ')']);
+					hold on;
+					showLayers(csd);
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('Tuning Curves', expName)];
@@ -75,6 +80,8 @@ function createImages()
 					imagesc(output, [-45 45]);
 					ylabel('Channels');
 					xlabel('Time (ms)');
+					hold on;
+					showLayers(csd);
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
@@ -104,6 +111,8 @@ function createImages()
 					title(['CSDMapping ' x{i}]);
 					ylabel('Channels');
 					xlabel('Time (ms)');
+					hold on;
+					showLayers(csd);
 					colorbar;
 					%Save figure
 					path=[Const.RESULT_DIRECTORY pathname('CSD Mapping', expName)];
@@ -118,6 +127,23 @@ function createImages()
 				%Meh. No biggie.
 			end
 		end
+	end
+end
+
+function showLayers(csd)
+	x = repmat([-10 2010], 6, 1);
+	csd.alignment
+	y = [csd.alignment.layerI(1) csd.alignment.layerI(1); ...
+	 	csd.alignment.layerII(1) csd.alignment.layerII(1); ...
+		csd.alignment.layerIV(1) csd.alignment.layerIV(1); ...
+		csd.alignment.layerV(1) csd.alignment.layerV(1); ...
+		csd.alignment.layerVI(1) csd.alignment.layerVI(1); ...
+		csd.alignment.layerVI(end) csd.alignment.layerVI(end)]-0.5;
+	for i=1:6
+		line(x(i,:), y(i,:), ...
+					'LineStyle', '--', ...
+					'LineWidth', 2, ...
+					'Color', [0 0 0]);
 	end
 end
 
