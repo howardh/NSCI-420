@@ -14,7 +14,8 @@ classdef test2
 
 		fFDR = true; %If true, will correct for false discovery
 
-		tests={'ttest', 'ttest paired'}
+		%Flags (should all be false by default)
+		fRedoAnalysis = 0;	%TODO: This flag is currenlty unused
 	end
 	methods
 		%Runs everything
@@ -171,19 +172,21 @@ classdef test2
 
 			%Convert the p values (ret) into h (0 if hypothesis is rejected, 1 otherwise)
 			ret(abs(ret) > this.alpha) = 0;
-			ret(:) = sign(ret(:)); %Can be 1 or -1, depending on the direction of the difference
+			%Amir wants to see the p-values along with the thresholding
+			%ret(:) = sign(ret(:)); %Can be 1 or -1, depending on the direction of the difference
 
 			%Produce 8 figures, one for each orientation
 			for x=1:8
 				%Format the data for the figures
 				output=mean(ret,4);
+				output(output ~= 0)=log(abs(output(output ~= 0))).*sign(output(output ~= 0));
 				output=squeeze(output(x,:,:,:));
 				output=transpose(output);
 
 				%Create and save the figures
 				h=figure;
 				set(h,'Visible','off');
-				imagesc(output,[-1 1]);
+				imagesc(output,[-10 10]);
 				colormap(cmap);
 				title([this.expName ' ' this.testName '\_' num2str(x) ' \alpha=' num2str(this.alpha)]);
 				xlabel('Orientation');
@@ -296,7 +299,8 @@ classdef test2
 				if (p(i) <= i/m*q)
 					continue;
 				end
-				alpha = (p(i-1)+p(i))/2;
+				%alpha = (p(i-1)+p(i))/2;
+				alpha = p(i);
 				break;
 			end
 
