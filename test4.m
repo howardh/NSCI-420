@@ -79,6 +79,7 @@ classdef test4 < handle
 				end
 				csd.data=csd.data(:,1000:1200,:,:);
 				ret=this.align(csd);
+				ret.updateLayers();
 				return;
 			end
 			ret=[];
