@@ -24,7 +24,7 @@ function ret=main()
 	%x.analyze();
 	%x.evaluateTuningCurve(csd);
 
-	%run('test5');
+	run('test2');
 	createImages();
 
 	%run('test4');
@@ -138,7 +138,7 @@ function showLayers(csd)
 		csd.alignment.layerIV(1) csd.alignment.layerIV(1); ...
 		csd.alignment.layerV(1) csd.alignment.layerV(1); ...
 		csd.alignment.layerVI(1) csd.alignment.layerVI(1); ...
-		csd.alignment.layerVI(end) csd.alignment.layerVI(end)]-0.5;
+		csd.alignment.layerVI(end)+1 csd.alignment.layerVI(end)+1]-0.5;
 	for i=1:6
 		line(x(i,:), y(i,:), ...
 					'LineStyle', '--', ...

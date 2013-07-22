@@ -5,7 +5,8 @@ classdef CSDLoader
         trials = []; %if empty it just computes the mean
 
 		%Flags (should all be false by default)
-		fReloadAlignment = 1;
+		fReloadAll = 0;			%Reload everything
+		fReloadAlignment = 1;	%Reload alignment (from test4/test5)
     end
     methods
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14,7 +15,7 @@ classdef CSDLoader
 			fSave = false; %If true, then the data is saved at the end
 
 			fileName=[Const.DATA_DIRECTORY pathname(this.expName) testName '.mat'];
-			if exist(fileName, 'file')
+			if (exist(fileName, 'file') & ~this.fReloadAll)
 				%If the file already exists, then load it
 				disp(['File ' testName ' already exists. Loading from file.']);
 				x=load(fileName);

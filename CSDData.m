@@ -20,7 +20,10 @@ classdef CSDData
     methods
         function ret=save(this)
 			%Make sure the directory exists
-			mkdir([Const.DATA_DIRECTORY pathname(this.expName)]);
+			dir = [Const.DATA_DIRECTORY pathname(this.expName)];
+			if ~exist(dir, 'dir')
+				mkdir(dir);
+			end
 			%Save the data
             save([Const.DATA_DIRECTORY pathname(this.expName) this.testName '.mat'], 'this');
         end
