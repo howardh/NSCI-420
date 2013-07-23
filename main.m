@@ -20,12 +20,14 @@ function ret=main()
 	%Grating tests: 44,48,58,65,73,77,82,85,95,104,121,137,145
 	%loader=CSDLoader;
 	%csd=loader.load('065');
-	%x=test6;
-	%x.analyze();
+	x=test6;
+	x.analyze();
 	%x.evaluateTuningCurve(csd);
+	%ret=x.circularVariance(csd);
+	%x.viewCirvVar(csd);
 
-	run('test2');
-	createImages();
+	%run('test2');
+	%createImages();
 
 	%run('test4');
 	%run('test5');
@@ -102,6 +104,31 @@ function createImages()
 						path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
 						mkdir(path);
 						saveas(h, [path x{i} '-cond' num2str(cond) '.' figFormat], figFormat);
+					end
+
+					%Create a figure comparing a single channel over all 8 orientations
+					for ch=1:32
+						h=figure;
+						set(h,'Visible','off');
+
+						subplot(2,1,1); 
+						output=squeeze(mean(csd.data(ch,[1000:1200],:,:),3))';
+						imagesc(output, [-45 45]);
+						ylabel('Conditions');
+						xlabel('Time (ms)');
+						title([num2str(ch-csd.alignment.firstChannel)]);
+						colorbar;
+
+						subplot(2,1,2); 
+						output=squeeze(mean(output,2));
+						plot(1:length(output),output);
+						ylabel('CSD');
+						xlabel('Condition');
+
+						%Save figure
+						path=[Const.RESULT_DIRECTORY pathname('Grating CSD', expName)];
+						mkdir(path);
+						saveas(h, [path x{i} '-ch' num2str(ch) '.' figFormat], figFormat);
 					end
 				elseif csd.isCSDMapping()
 					%Create figure (CSD)
