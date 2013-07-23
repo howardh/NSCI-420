@@ -66,3 +66,8 @@
 	* Classification: 1 for prefered orientation, 0 for non-prefered orientation
 * Takes ? channels above the brain surface, and ? channels within.
 * Outputs: ???
+* Misc methods (TODO: These methods don't belong here)
+	* evaluateTuningCurve
+		* Input: CSDData
+		* Output: True if the data is well tuned, and false otherwise
+	* circularVariance

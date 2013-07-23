@@ -139,6 +139,13 @@ classdef test6 < handle
 
 		function analyze(this)
 			[xAll,yAll]=this.generateDataSet(3,19,0); %Entire data set
+			%xAll = [4 1; 2 4; 2 3; 3 6; 4 4; ...
+			%		9 10; 6 8; 9 5; 8 7; 10 8];
+			%yAll = [0 0 0 0 0 1 1 1 1 1];
+			%xAll = [1 2 3; 2 3 4; 3 4 5; 8 9 10; 9 10 11; 5 6 7; 4 5 6; 6 7 8; 7 8 9; 10 11 12];
+			%xAll = xAll + (rand(size(xAll))-0.5)/100
+			%yAll = [0 0 0 1 1 0 0 1 1 1];
+
 			size(xAll)
 			size(yAll)
 
@@ -157,24 +164,53 @@ classdef test6 < handle
 			mu1=mean(x1,1);
 			muAll=mean(xAll,1);
 
+			var0=var(x0,1);
+			var1=var(x1,1);
+			varAll=var(xAll,1); %Total variance
+			varB = length(x0)*(mu0-muAll).^2+length(x1)*(mu1-muAll).^2; %Between group variance
+			varW = var0+var1; %Within group variance
+			var0'
+			var1'
+			varAll'
+			(varB+varW)'
+			(varAll-varW)'
+
 			cov0 = (cov(x0));
 			cov1 = (cov(x1));
 			covAll = (cov(xAll));
 
-			w = inv(covAll)*(mu1-mu0)';
+			s0=0;
+			for i=1:length(x0)
+				s0 = s0 + (x0(i,:)-mu0)'*(x0(i,:)-mu0);
+			end
+			%s0
 
-			c = w*(mu0+mu1)/2;
+			s1=0;
+			for i=1:length(x1)
+				s1 = s1 + (x1(i,:)-mu1)'*(x1(i,:)-mu1);
+			end
+			%s1
 
-			%Display results
+			sw = s0+s1; %Within class scatter matrix
+
+			w = inv(sw)*(mu0-mu1)';
+			w = inv(cov0+cov1)*(mu1-mu0)';
+
+			%s = ((w*(mu1-mu0))^2)/(w'*(cov0+cov1)*w)
+			%s = (dot(w,(mu1-mu0)')^2)/(w'*(cov0+cov1)*w)
+			s1 = ((w.*(mu1-mu0)').^2)/(w'*(cov0+cov1)*w);
+			s = varB./varW;
+			s1./s';
+
+			c = w'*(mu0+mu1)'/2;
+
+			fisherScore = (mu0-mu1).^2./(var0+var1);
+
+			%%Display results
 			ch = [-3:-1 1:19-3];
 			for i=1:length(w)
-				disp(['Channel ' num2str(ch(i)) ':  ' 9 num2str(w(i))]);
+				disp(['Channel ' num2str(ch(i)) ':  ' 9 num2str(w(i), '%+1.3e')  9 ' fs ' num2str(fisherScore(i), '%+1.3e')]);
 			end
-
-			w = inv(cov0+cov1)*(mu1-mu0)';
-			s1 = (w*(mu1-mu0))^2;
-			s2 = w' * (cov0+cov1) * w;
-			s1/s2
 		end
 
 		% @return
@@ -207,6 +243,57 @@ classdef test6 < handle
 			%Make pretties
 			figure;
 			plot(1:length(tc), tc);
+		end
+
+		function viewCirvVar(this,csd)
+			tc = csd.tuningCurve;
+			tc = (tc(:,1:8)+tc(:,9:16))/2;
+
+			v = this.circularVariance(tc,0);
+			figure('Position', [0 100 200 300]);
+			imagesc(v);
+			title('Spikes 0');
+			v = this.circularVariance(tc,1);
+			figure('Position', [200 100 200 300]);
+			imagesc(v);
+			title('Spikes 1');
+
+			data = squeeze(mean(mean(csd.data(:,1000:1200,:,:),2),3));
+			data = (data(:,1:8)+data(:,9:16))/2;
+
+			v = this.circularVariance(data,0);
+			figure('Position', [400 100 200 300]);
+			imagesc(v);
+			title('CSD 0');
+			v = this.circularVariance(data,1);
+			figure('Position', [600 100 200 300]);
+			imagesc(v);
+			title('CSD 1');
+		end
+
+		function ret=circularVariance(this,data,fMean)
+			channels=32;
+			conditions=8;
+
+			ret=zeros(channels,1);
+			for ch=1:channels
+				num=0;
+				denom=0;
+				for cond=1:conditions
+					num = num + data(ch,cond)*exp(i*2*cond*pi/8);
+					denom = denom + data(ch,cond);
+				end
+				if (fMean)
+					ret(ch) = num/denom;
+				else
+					ret(ch) = num;
+				end
+			end
+			if (fMean)
+				ret = 1-abs(ret);
+			else
+				ret = abs(ret);
+			end
 		end
 	end
 
