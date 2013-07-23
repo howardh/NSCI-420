@@ -240,6 +240,21 @@ classdef test6 < handle
 				ret = 0;
 			end
 
+			%Full width at half max
+			width=0;
+			left=pref;
+			right=pref;
+			halfMax = (max(tc)-min(tc))/2;
+			while (tc(left) > halfMax)
+				left = left-1;
+			end
+			left = left + (halfMax-tc(left))/(tc(left+1)-tc(left));
+			while (tc(right) > halfMax)
+				right = right+1;
+			end
+			right = right + (halfMax-tc(right))/(tc(right-1)-tc(right));
+			width = right-left; %TODO: What do I do with this now?
+
 			%Make pretties
 			figure;
 			plot(1:length(tc), tc);
