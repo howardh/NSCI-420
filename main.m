@@ -20,13 +20,13 @@ function ret=main()
 	%Grating tests: 44,48,58,65,73,77,82,85,95,104,121,137,145
 	%loader=CSDLoader;
 	%csd=loader.load('065');
-	x=test6;
-	x.analyze();
+	%x=test6;
+	%x.analyze();
 	%x.evaluateTuningCurve(csd);
 	%ret=x.circularVariance(csd);
 	%x.viewCirvVar(csd);
 
-	%run('test2');
+	run('test2');
 	%createImages();
 
 	%run('test4');

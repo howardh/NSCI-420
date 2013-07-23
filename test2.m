@@ -15,7 +15,8 @@ classdef test2
 		fFDR = true; %If true, will correct for false discovery
 
 		%Flags (should all be false by default)
-		fRedoAnalysis = 0;	%TODO: This flag is currenlty unused
+		fRedoAnalysis = 0;
+		fShowFdrPlots = 0;
 	end
 	methods
 		%Runs everything
@@ -74,7 +75,7 @@ classdef test2
 			cdforce(dir);
 
 			%If we haven't already done the analysis, then do them
-			if (~exist('../ret.mat','file'))
+			if (~exist('../ret.mat','file') | this.fRedoAnalysis)
 				disp('compute stuff');
 				%Load the data
 				loader=CSDLoader;
@@ -293,7 +294,7 @@ classdef test2
 
 			%Benjamini-Hochberg
 			m=length(p);
-			q=0.3;
+			q=this.alpha;
 			alpha=0;
 			for i=1:m
 				if (p(i) <= i/m*q)
@@ -304,13 +305,15 @@ classdef test2
 				break;
 			end
 
-			%%Sort and plot p-values (Debugging purposes)
-			%y=sort(abs(p(:)));
-			%h=figure;
-			%plot(1:length(y),y);
-			%title([num2str(a)]);
-			%hold on;
-			%plot(1:length(y),[1:length(y)]/m*q);
+			%Sort and plot p-values (Debugging purposes)
+			if (this.fShowFdrPlots)
+				y=p(:);
+				h=figure;
+				plot(1:length(y),y);
+				title([num2str(alpha)]);
+				hold on;
+				plot(1:length(y),[1:length(y)]/m*q);
+			end
 		end
 	end
 end
