@@ -36,10 +36,10 @@ classdef test2
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						for a=1:5
-							this.alpha = 10^-a;
+						for a=[0.1 0.05 0.01 0.005 0.001];
+							this.alpha = a;
 							%Perform tests with and without false discovery correction
-							for fdr=[true false]
+							for fdr=[false true]
 								this.fFDR = fdr;
 								isGrating=this.runOnce();
 								%If the current test is not a grating stimulus, skip
@@ -71,7 +71,7 @@ classdef test2
 		%	y axis = channel
 		function isGrating=runOnce(this)
 			isGrating=1;
-			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName, num2str(this.timeSubdiv), num2str(-log10(this.alpha))) ];
+			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName, this.testName, num2str(this.timeSubdiv), num2str(this.alpha)) ];
 			cdforce(dir);
 
 			%If we haven't already done the analysis, then do them
@@ -106,11 +106,6 @@ classdef test2
 			%Load the color map
 			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
 
-			%Check for false discovery
-			if (this.fFDR & this.alpha ~= 0)
-				this.alpha = this.correctFalseDiscovery(abs(ret(:)));
-			end
-
 			%Plot p-values and t statistics
 			if (this.alpha == 0)
 				%p-values
@@ -138,11 +133,12 @@ classdef test2
 					saveas(h,['p' num2str(x) '.' this.figFormat], this.figFormat);
 				end
 
-				%Sort and plot p-values
-				y=sort(ret(:));
-				h=figure;
-				plot(1:length(y),y);
-				saveas(h,['pp' num2str(x) '.' this.figFormat], this.figFormat);
+				%TODO: What is this and why is this here
+				%%Sort and plot p-values
+				%y=sort(ret(:));
+				%h=figure;
+				%plot(1:length(y),y);
+				%saveas(h,['pp' num2str(x) '.' this.figFormat], this.figFormat);
 
 				%t statistics
 				for x=1:8
@@ -169,6 +165,11 @@ classdef test2
 					saveas(h,['t' num2str(x) '.' this.figFormat], this.figFormat);
 				end
 				return;
+			end
+
+			%Check for false discovery
+			if (this.fFDR & this.alpha ~= 0)
+				this.alpha = this.correctFalseDiscovery(abs(ret(:)));
 			end
 
 			%Convert the p values (ret) into h (0 if hypothesis is rejected, 1 otherwise)
@@ -296,13 +297,11 @@ classdef test2
 			m=length(p);
 			q=this.alpha;
 			alpha=0;
-			for i=1:m
+			for i=fliplr(1:m)
 				if (p(i) <= i/m*q)
-					continue;
+					alpha = p(i);
+					break;
 				end
-				%alpha = (p(i-1)+p(i))/2;
-				alpha = p(i);
-				break;
 			end
 
 			%Sort and plot p-values (Debugging purposes)

@@ -59,15 +59,22 @@
 	* results.mat (test5/expName/Covariance/)
 	* Plot for each insertion (test5/expName/)
 
-## Test 6
+## Test 6 (Fisher)
 
 * Requires having run Test5 first (Uses the alignment data)
 * Creates a training set from all available grating stimuli runs
 	* Classification: 1 for prefered orientation, 0 for non-prefered orientation
 * Takes ? channels above the brain surface, and ? channels within.
-* Outputs: ???
-* Misc methods (TODO: These methods don't belong here)
+* Outputs:
+	* Fisher linear discriminant training error and validation error
+* Misc methods (TODO: These methods do not belong here)
 	* evaluateTuningCurve
 		* Input: CSDData
 		* Output: True if the data is well tuned, and false otherwise
 	* circularVariance
+
+## Test 7 (Mutual Information)
+
+* Currently only works under Linux
+* Requires the "Mutual information computation" package by Hanchuan Peng
+
