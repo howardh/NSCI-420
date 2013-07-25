@@ -9,7 +9,6 @@ classdef test6 < handle
 		function run(this)
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
-
 				this.runOnce();
 			end
 		end
@@ -138,7 +137,9 @@ classdef test6 < handle
 		end
 
 		function analyze(this)
-			[xAll,yAll]=this.generateDataSet(3,19,0); %Entire data set
+			channelsAbove = 3;
+			totalChannels = 19;
+			[xAll,yAll]=this.generateDataSet(channelsAbove,totalChannels,0);
 			%xAll = [4 1; 2 4; 2 3; 3 6; 4 4; ...
 			%		9 10; 6 8; 9 5; 8 7; 10 8];
 			%yAll = [0 0 0 0 0 1 1 1 1 1];
@@ -207,10 +208,22 @@ classdef test6 < handle
 			fisherScore = (mu0-mu1).^2./(var0+var1);
 
 			%%Display results
-			ch = [-3:-1 1:19-3];
+			%ch = [-3:-1 1:19-3];
+			ch=[-channelsAbove:-1 1:(totalChannels-channelsAbove)]';
 			for i=1:length(w)
 				disp(['Channel ' num2str(ch(i)) ':  ' 9 num2str(w(i), '%+1.3e')  9 ' fs ' num2str(fisherScore(i), '%+1.3e')]);
 			end
+
+			fisherScore = [ch s1 fisherScore' w];
+			disp('Sorted by separation');
+			[Y,I] = sort(fisherScore(:,2));
+			fisherScore(I,:)
+			disp('Sorted by Fisher score');
+			[Y,I] = sort(fisherScore(:,3));
+			fisherScore(I,:)
+			disp('Sorted by weight');
+			[Y,I] = sort(abs(fisherScore(:,4)));
+			fisherScore(I,:)
 		end
 
 		% @return

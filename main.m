@@ -2,20 +2,20 @@ function ret=main()
 	addpath(Const.SCRIPT_DIRECTORY);
 	onCleanup(@() cd(Const.SCRIPT_DIRECTORY));
 
-	%dir2 = [Const.RESULT_DIRECTORY pathname('test5', '12mv1211', 'Covariance')];
-	%load([dir2 'results.mat']);
-	%results('044')
+	%Meeting 2013-07-25
 
-	%x=test4;
-	%x.testName='071';
-	%x.stdViewer();
-	%x.pcsdViewer();
-	%x.testName='071';
-	%x.alignmentViewer();
+	%Circular variance
+	loader=CSDLoader;
+	csd=loader.load('065');
+	x=test6;
+	x.viewCirvVar(csd);
 
-	%run('test6');
-	%load('obj.mat');
-	%ret=obj;
+	%Fisher information
+	x=test6;
+	x.analyze();
+
+	%Mutual information
+	run('test7');
 
 	%Grating tests: 44,48,58,65,73,77,82,85,95,104,121,137,145
 	%loader=CSDLoader;
@@ -26,11 +26,8 @@ function ret=main()
 	%ret=x.circularVariance(csd);
 	%x.viewCirvVar(csd);
 
-	run('test2');
-	%createImages();
+	%run('test7');
 
-	%run('test4');
-	%run('test5');
 	%runAll();
 end
 

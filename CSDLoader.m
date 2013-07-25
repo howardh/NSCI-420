@@ -6,7 +6,7 @@ classdef CSDLoader
 
 		%Flags (should all be false by default)
 		fReloadAll = 0;			%Reload everything
-		fReloadAlignment = 1;	%Reload alignment (from test4/test5)
+		fReloadAlignment = 0;	%Reload alignment (from test4/test5)
     end
     methods
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
