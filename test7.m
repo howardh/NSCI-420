@@ -38,6 +38,16 @@ classdef test7 < handle
 			[Y,I] = sort(mi(:,2));
 			mi(I,:)
 			mi
+
+			h=figure;
+			set(h,'visible','off');
+			ha=axes;
+			barh(mi(:,1),mi(:,2));
+			set(ha, 'YDir', 'reverse');
+			xlabel('Mutual information');
+			ylabel('Channel (Relative to surface)');
+			saveas(h, ['mi.' this.figFormat], this.figFormat);
+
 			save('mi.mat','mi');
 		end
 	end
