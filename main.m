@@ -4,18 +4,18 @@ function ret=main()
 
 	%Meeting 2013-07-25
 
-	%Circular variance
-	loader=CSDLoader;
-	csd=loader.load('065');
-	x=test6;
-	x.viewCirvVar(csd);
+	%%Circular variance
+	%loader=CSDLoader;
+	%csd=loader.load('065');
+	%x=test6;
+	%x.viewCirvVar(csd);
 
 	%Fisher information
 	x=test6;
 	x.analyze();
 
-	%Mutual information
-	run('test7');
+	%%Mutual information
+	%run('test7');
 
 	%Grating tests: 44,48,58,65,73,77,82,85,95,104,121,137,145
 	%loader=CSDLoader;
@@ -26,7 +26,7 @@ function ret=main()
 	%ret=x.circularVariance(csd);
 	%x.viewCirvVar(csd);
 
-	%run('test7');
+	%run('test8');
 
 	%runAll();
 end

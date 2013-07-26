@@ -78,3 +78,6 @@
 * Currently only works under Linux
 * Requires the "Mutual information computation" package by Hanchuan Peng
 
+## Test 8
+
+* Finds all tests that are well tuned
