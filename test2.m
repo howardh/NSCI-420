@@ -131,6 +131,7 @@ classdef test2
 							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
 					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
 					saveas(h,['p' num2str(x) '.' this.figFormat], this.figFormat);
+					close(h);
 				end
 
 				%TODO: What is this and why is this here
@@ -163,6 +164,7 @@ classdef test2
 							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
 					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
 					saveas(h,['t' num2str(x) '.' this.figFormat], this.figFormat);
+					close(h);
 				end
 				return;
 			end
@@ -199,6 +201,7 @@ classdef test2
 					fileName = ['FDR' fileName];
 				end
 				saveas(h,[fileName '.' this.figFormat], this.figFormat);
+				close(h);
 			end
 
 			%Average over orientations
@@ -218,6 +221,7 @@ classdef test2
 				fileName = ['FDR' fileName];
 			end
 			saveas(h,[fileName '.' this.figFormat], this.figFormat);
+			close(h);
 		end
 
 		function clear(this)
