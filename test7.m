@@ -16,6 +16,9 @@ classdef test7 < handle
 		end
 
 		function runOnce(this)
+			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
+			cdforce(dir);
+
 			channelsAbove = 3;
 			totalChannels = 20;
 			t6 = test6;
@@ -35,6 +38,7 @@ classdef test7 < handle
 			[Y,I] = sort(mi(:,2));
 			mi(I,:)
 			mi
+			save('mi.mat','mi');
 		end
 	end
 end

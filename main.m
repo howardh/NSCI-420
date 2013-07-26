@@ -10,9 +10,9 @@ function ret=main()
 	%x=test6;
 	%x.viewCirvVar(csd);
 
-	%Fisher information
-	x=test6;
-	x.analyze();
+	%%Fisher information
+	%x=test6;
+	%x.analyze();
 
 	%%Mutual information
 	%run('test7');
@@ -26,6 +26,7 @@ function ret=main()
 	%ret=x.circularVariance(csd);
 	%x.viewCirvVar(csd);
 
+	run('test7');
 	%run('test8');
 
 	%runAll();
