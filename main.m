@@ -26,9 +26,9 @@ function ret=main()
 	%ret=x.circularVariance(csd);
 	%x.viewCirvVar(csd);
 
-	run('test2');
+	%run('test2');
 	%run('test7');
-	%run('test8');
+	run('test8');
 
 	%runAll();
 end
