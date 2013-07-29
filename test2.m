@@ -27,7 +27,7 @@ classdef test2
 			%Every experiment
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
-				testNames=Const.ALL_TESTS(this.expName);
+				testNames=[Const.ALL_TESTS(this.expName), {'all'}];
 				%Every test within that experiment
 				for tn=1:length(testNames)
 					this.testName = testNames{tn};
@@ -128,7 +128,7 @@ classdef test2
 					caption=['Color represents the p-values after a log transformation' lb ...
 							 'Proximity to white = less significant difference' lb ...
 							 'Orientation ' num2str(x) ' compared to every other orientation (Including itself)' lb ...
-							 'red = CSD of orientation ' num2str(x) ' at that channel is larger than that of the orientation represented by that column at that channel.'];
+							 'red = CSD of orientation ' num2str(x) ' at that channel is larger (closer to being a sink) than that of the orientation represented by that column at that channel.'];
 					annotation('textbox', [.5 .1 .4 .8], 'String', caption);
 					saveas(h,['p' num2str(x) '.' this.figFormat], this.figFormat);
 					close(h);

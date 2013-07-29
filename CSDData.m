@@ -25,19 +25,32 @@ classdef CSDData
 				mkdir(dir);
 			end
 			%Save the data
+			size(this.data)
             save([Const.DATA_DIRECTORY pathname(this.expName) this.testName '.mat'], 'this');
+			size(this.data)
         end
 
 		%Discard everything except the data over the defined time window
 		function ret=trim(this)
-			ret=this.data(this.channelWindow,this.timeWindow,:,:);
+			try
+				ret=this.data(this.channelWindow,this.timeWindow,:,:);
+			catch err
+				s = size(this.data);
+				this.channelWindow = 1:s(1);
+				ret=this.data(this.channelWindow,this.timeWindow,:,:);
+			end
 		end
 
 		%Takes the conditions with the same orientations, and average them within the trial
 		function ret=avgConditions(this)
-			a=this.data(:,:,:,[1:8]);
-			b=this.data(:,:,:,[9:16]);
-			ret=(a+b)/2;
+			s = size(this.data);
+			if (s(4) == 16)
+				a=this.data(:,:,:,[1:8]);
+				b=this.data(:,:,:,[9:16]);
+				ret=(a+b)/2;
+			else
+				ret=this.data;
+			end
 		end
 		%Take the conditions with the same orientation, and add them as another trial
 		function ret=mergeConditions(this)
@@ -48,6 +61,10 @@ classdef CSDData
 
 		%Computes prefered orientation
 		function ret=getPrefOrientation(this)
+			if (isempty(this.tuningCurve)) %Combined CSD data will not have a tuning curve
+				ret=1;
+				return;
+			end
 			x=mean(this.tuningCurve,1);
 			a=x([1:8]);
 			b=x([9:16]);

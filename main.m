@@ -26,9 +26,12 @@ function ret=main()
 	%ret=x.circularVariance(csd);
 	%x.viewCirvVar(csd);
 
-	%run('test2');
 	%run('test7');
-	run('test8');
+
+	%run('test8');
+	run('test2');
+
+	%createImages();
 
 	%runAll();
 end
@@ -51,11 +54,12 @@ function createImages()
 	loader=CSDLoader;
 	for e=1:length(Const.ALL_EXPERIMENTS);
 		expName=Const.ALL_EXPERIMENTS{e};
-		x=Const.ALL_TESTS(expName);
+		x=[Const.ALL_TESTS(expName) {'all'}];
 		loader.expName=expName;
 		for i=1:length(x)
 			try
 				csd=loader.load(x{i});
+				csd.alignment.updateLayers();
 				if csd.isGrating()
 					%Create figure (Tuning curve)
 					disp(['Creating tuning curve ' x{i}]);
@@ -106,7 +110,8 @@ function createImages()
 					end
 
 					%Create a figure comparing a single channel over all 8 orientations
-					for ch=1:32
+					s = size(csd.data);
+					for ch=1:s(1)
 						h=figure;
 						set(h,'Visible','off');
 

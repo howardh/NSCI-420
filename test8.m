@@ -12,15 +12,25 @@ classdef test8 < handle
 				this.expName = Const.ALL_EXPERIMENTS{en};
 
 				testNames=Const.ALL_TESTS(this.expName);
+
 				%Every test within that experiment
+				csdAll=[];
 				for tn=1:length(testNames)
 					this.testName = testNames{tn};
-					this.runOnce();
+					csdAll=this.runOnce(csdAll);
 				end
+
+				size(csdAll.data)
+				csdAll.testName = 'all';
+				csdAll.save();
 			end
 		end
 
-		function runOnce(this)
+		% @param csdAll
+		%	CSD of all well tuned tests so far
+		% @return
+		%	csdAll + this test if it is well tuned
+		function csdAll=runOnce(this, csdAll)
 			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
 			cdforce(dir);
 
@@ -34,7 +44,19 @@ classdef test8 < handle
 			end
 
 			this.viewCircVar(csd);
-			%this.evaluateTuningCurve(csd);
+			if this.evaluateTuningCurve(csd)
+				%csd.data = csd.avgConditions();
+
+				if isempty(csdAll)
+					csdAll = csd;
+					return;
+				end
+
+				csdAll = combineCSD(csdAll, csd);
+				size(csdAll.data)
+				return;
+			end
+			disp(['Rejected']);
 		end
 
 		% @return
@@ -90,12 +112,11 @@ classdef test8 < handle
 			tc = csd.tuningCurve;
 			tc = (tc(:,1:8)+tc(:,9:16))/2;
 
-			v = this.circularVariance(tc,0);
+			v = this.circularVariance(tc,1);
 
-			avg1 = mean(v(csd.alignment.layerII(1):csd.alignment.layerIV(end)));
+			avg1 = mean(v([csd.alignment.layerII csd.alignment.layerIV]));
 			avg2 = mean(v(csd.alignment.layerIV));
 			avg3 = mean(v(~isnan(v)));
-
 			if (avg3-avg1 > 0.05 | avg3-avg2 > 0.05)
 				ret=1;
 			else
@@ -117,7 +138,7 @@ classdef test8 < handle
 			close(h);
 
 			v = this.circularVariance(tc,1);
-			avg1 = mean(v(csd.alignment.layerII(1):csd.alignment.layerIV(end)));
+			avg1 = mean(v([csd.alignment.layerII csd.alignment.layerIV]));
 			avg2 = mean(v(csd.alignment.layerIV));
 			avg3 = mean(v(~isnan(v)));
 			h = figure('Position', [200 100 200 300]);
