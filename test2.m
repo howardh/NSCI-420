@@ -17,6 +17,8 @@ classdef test2
 		%Flags (should all be false by default)
 		fRedoAnalysis = 0;
 		fShowFdrPlots = 0;
+		fShowLayers = 1;
+		fShowOptimal = 1;
 	end
 	methods
 		%Runs everything
@@ -103,6 +105,15 @@ classdef test2
 				tStat=loadvar('../tstat.mat');
 			end
 
+			%If we want to see the layers, then we need to load the csd anyway
+			po=[];
+			if (this.fShowLayers | this.fShowOptimal | ~exist('csd'))
+				loader=CSDLoader;
+				loader.expName=this.expName;
+				csd=loader.load(this.testName);
+				po = csd.getPrefOrientation();
+			end
+
 			%Load the color map
 			cmap=interp1([1 32 64],[0 0 1; 1 1 1; 1 0 0],1:64);
 
@@ -118,8 +129,13 @@ classdef test2
 					subplot(1,2,1); %Make room for the caption
 					range=[-9 9]; %Based on a visual inspection of the results without a range
 					imagesc(transpose(output), range);
+					if (this.fShowLayers) hold on; showLayers(csd); end
 					colormap(cmap);
-					title([this.expName ' ' this.testName '\_' num2str(x)]);
+					t = [this.expName ' ' this.testName '\_' num2str(x)];
+					if x==po
+						t = [t ' (Prefered)'];
+					end
+					title(t);
 					xlabel('Orientation');
 					ylabel('Channel');
 					zlabel('P value (log transformed)');
@@ -151,8 +167,13 @@ classdef test2
 					subplot(1,2,1); %Make room for the caption
 					range=[-5 5]; %Based on a visual inspection of the results without a range
 					imagesc(transpose(output), range);
+					if (this.fShowLayers) hold on; showLayers(csd); end
 					colormap(cmap);
-					title([this.expName ' ' this.testName '\_' num2str(x) ' t Statistics']);
+					t = [this.expName ' ' this.testName '\_' num2str(x) ' t Statistics'];
+					if x==po
+						t = [t ' (Prefered)'];
+					end
+					title(t);
 					xlabel('Orientation');
 					ylabel('Channel');
 					zlabel('T statistics');
@@ -191,8 +212,13 @@ classdef test2
 				h=figure;
 				set(h,'Visible','off');
 				imagesc(output,[-10 10]);
+				if (this.fShowLayers) hold on; showLayers(csd); end
 				colormap(cmap);
-				title([this.expName ' ' this.testName '\_' num2str(x) ' \alpha=' num2str(this.alpha)]);
+				t = [this.expName ' ' this.testName '\_' num2str(x) ' \alpha=' num2str(this.alpha)];
+				if x==po
+					t = [t ' (Prefered)'];
+				end
+				title(t);
 				xlabel('Orientation');
 				ylabel('Channel');
 				colorbar;
@@ -211,6 +237,7 @@ classdef test2
 			h=figure;
 			set(h,'Visible','off');
 			imagesc(transpose(output), [-1 1]);
+			if (this.fShowLayers) hold on; showLayers(csd); end
 			colormap(cmap);
 			title([this.expName ' ' this.testName ' mean \alpha=' num2str(this.alpha)]);
 			xlabel('Orientation');

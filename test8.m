@@ -45,6 +45,7 @@ classdef test8 < handle
 
 			this.viewCircVar(csd);
 			if this.evaluateTuningCurve(csd)
+				disp(['Good']);
 				%csd.data = csd.avgConditions();
 
 				if isempty(csdAll)

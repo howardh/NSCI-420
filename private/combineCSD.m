@@ -8,6 +8,9 @@
 %@return
 %	CSDData
 function ret=combineCSD(csd1, csd2)
+	%Parameters
+	fNormalize = 1; %Normalize so that the maximum average CSD value is 45
+
 	%If the data is not aligned, we can't do anything with it
 	if (isempty(csd1.alignment) | isempty(csd2.alignment))
 		disp(['Error: combineCSD(), alignment data not available. Run test4 and test5 first to obtain the data.']);
@@ -17,6 +20,19 @@ function ret=combineCSD(csd1, csd2)
 
 	%Initialize
 	ret=CSDData;
+
+	%Normalize
+	if (fNormalize)
+		data = csd1.data;
+		data = mean(mean(data(:,1000:1200,:,:),4),3);
+		m = max(abs(data(:)));
+		csd1.data = csd1.data/m*45;
+
+		data = csd2.data;
+		data = mean(mean(data(:,1000:1200,:,:),4),3);
+		m = max(abs(data(:)));
+		csd2.data = csd2.data/m*45;
+	end
 
 	%If it's a grating stimulus, rearrange data so that prefered orientations match
 	if (csd1.isGrating() & csd2.isGrating())
@@ -43,7 +59,7 @@ function ret=combineCSD(csd1, csd2)
 	%Trim above
 	delta = abs(csd1.alignment.firstChannel - csd2.alignment.firstChannel);
 	if (csd1.alignment.firstChannel > csd2.alignment.firstChannel)
-		csd1.data = csd1.data(delta+1:end,:,:,:); %TODO: Chech that this is correct
+		csd1.data = csd1.data(delta+1:end,:,:,:); %TODO: Check that this is correct
 		csd1.alignment.firstChannel = csd2.alignment.firstChannel;
 	else
 		csd2.data = csd2.data(delta+1:end,:,:,:);
