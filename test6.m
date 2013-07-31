@@ -1,6 +1,7 @@
 classdef test6 < handle
 	properties
 		expName='12mv1211';
+		testName='065';
 
 		figFormat='png';
 	end
@@ -15,7 +16,11 @@ classdef test6 < handle
 
 		function runOnce(this)
 			%[xAll,yAll]=this.generateDataSet(3,12,0); %Entire data set
-			[xAll,yAll]=this.generateDataSet(7,30,0); %Entire data set
+			%[xAll,yAll]=this.generateDataSet(7,30,0); %Entire data set
+			%[xAll,yAll]=this.generateDataSet([1:3 5 7 10 11 13 14 16],0); %Entire data set
+			%[xAll,yAll]=this.generateDataSet([1:15],0); %Entire data set
+			[xAll,yAll]=this.generateDataSet([9:15],0); %Entire data set
+			%[xAll,yAll]=this.generateDataSet([-3:-1 1 2 6 7 8 11 12 15],0); %Entire data set
 
 			totalError=0;
 			
@@ -54,24 +59,27 @@ classdef test6 < handle
 			save('obj.mat','obj');
 		end
 
-		% @param above
-		%		The number of channels to keep above the brain (Excluding first channel in the brain)
+		% @param channels
+		%		Channels to use, relative to the surface of the brain (surface is 0 and does not represent a channel)
 		%		If there isn't enough data, the matrix will be padded by NaN
-		% @param total
-		% 		Total number of channels to keep
 		% @param fValidation
 		%		Booleam value
 		%		If true, creates the validation set. Otherwise, creates the training set.
-		function [retX,retY]=generateDataSet(this, above, total, fValidation)
+		function [retX,retY]=generateDataSet(this, channels, fValidation)
 			%Default arguments
 			if nargin == 1
-				above=2;
-				total=18;
+				channels = [-2 -1 1:16];
 			end
 
+			%Just to make computations easier
+			channels(channels < 0) = channels(channels < 0) + 1;
+			channels = channels-1;
+
 			tests = Const.ALL_TESTS(this.expName);
+			%tests = {'all'};
 
 			loader=CSDLoader;
+			loader.expName = this.expName;
 
 			retX = [];
 			retY = [];
@@ -88,14 +96,14 @@ classdef test6 < handle
 				csd.data = csd.data(:,tWindow,:,:);
 
 				%Cut out the window in channels
-				top=csd.alignment.firstChannel-above;
+				ch = channels + csd.alignment.firstChannel;
+				top=min(ch);
 				if (top < 1)
 					s=size(csd.data);
 					cat(1,nan(1-top,s(2),s(3)),csd.data);
-					top=1;
+					ch = ch - top + 1;
 				end
-				csd.data = csd.data(top:end,:,:,:);
-				csd.data = csd.data(1:total,:,:,:);
+				csd.data = csd.data(ch,:,:,:);
 
 				%Cut out the window in trials
 				%if (fValidation)
@@ -136,13 +144,15 @@ classdef test6 < handle
 			retX = transpose(retX);
 		end
 
+		% Computes separability, Fisher score, weights, and creates a figure for them
 		function analyze(this)
 			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
 			cdforce(dir);
 
 			channelsAbove = 3;
 			totalChannels = 19;
-			[xAll,yAll]=this.generateDataSet(channelsAbove,totalChannels,0);
+			%[xAll,yAll]=this.generateDataSet(channelsAbove,totalChannels,0);
+			[xAll,yAll]=this.generateDataSet([-channelsAbove:-1 1:(totalChannels-channelsAbove)],0);
 			%xAll = [4 1; 2 4; 2 3; 3 6; 4 4; ...
 			%		9 10; 6 8; 9 5; 8 7; 10 8];
 			%yAll = [0 0 0 0 0 1 1 1 1 1];

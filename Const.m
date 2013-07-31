@@ -40,10 +40,10 @@ classdef Const
 			%FIXME: Temporary, for debugging purposes
 			%ret={'065'};
 			%ret={'044'};
-			%ret={'137'};
+			ret={'145'};
 			%ret={'044', '048', '065'};
 			%ret={};
-			%return;
+			return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
 				%TODO: Removed 034, 059, 066, 074, 075, 086, 088, 091, 092, 093, 094, 096, 105, 113, 115, 125, 138, 146. Don't know why it won't load.
