@@ -10,18 +10,141 @@ classdef test6 < handle
 		function run(this)
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
-				this.runOnce();
+
+				tests = Const.ALL_TESTS(this.expName);
+
+				for t=1:length(tests)
+					this.testName = tests{t};
+					this.runOnce();
+				end
 			end
 		end
 
 		function runOnce(this)
-			%[xAll,yAll]=this.generateDataSet(3,12,0); %Entire data set
-			%[xAll,yAll]=this.generateDataSet(7,30,0); %Entire data set
-			%[xAll,yAll]=this.generateDataSet([1:3 5 7 10 11 13 14 16],0); %Entire data set
-			%[xAll,yAll]=this.generateDataSet([1:15],0); %Entire data set
-			[xAll,yAll]=this.generateDataSet([9:15],0); %Entire data set
-			%[xAll,yAll]=this.generateDataSet([-3:-1 1 2 6 7 8 11 12 15],0); %Entire data set
+			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
+			cdforce(dir);
 
+			%Generate data
+			channels = [-3:-1 1:20];
+			[xAll,yAll]=this.generateDataSet(channels,0); %Entire data set
+
+			%Computations (Genetic algorithm)
+			indAll = [1:length(channels)];
+
+			popSize = 15;
+			mutationChance = 1;
+			crossOverChance = 1;
+			pop={}; %pop{:,1} = gene, pop{:,2} = fitness (smaller = better)
+
+			%Initialize population
+			for i=1:popSize
+				temp = rand(1,length(indAll));
+				temp(temp < 0.5) = 0;
+				temp(temp ~= 0) = 1;
+				pop{i,1} = temp;
+
+				%Get channels
+				indices = indAll.*pop{i,1};
+				indices(indices==0)=[];
+
+				%Compute fitness
+				pop{i,2} = this.crossValidate(xAll(:,indices), yAll);
+			end
+
+			%Run GA
+			while 1
+				%Sort population based on fitness
+				[Y,I] = sort(cell2mat(pop(:,2)));
+				pop = pop(I,:);
+
+				%Remove duplicates
+				pop=this.removeDup(pop);
+
+				%Cut down population
+				m=min(length(pop),popSize);
+				pop = pop(1:m, :);
+
+				%Display results so far
+				pop
+				for i=1:3
+					indices = indAll.*pop{i,1};
+					indices(indices==0)=[];
+					channels(indices)
+				end
+
+				%Mutation
+				disp('Mutations');
+				for i = 1:length(pop)
+					%Am I radioactive?
+					if (rand() > mutationChance*(i/length(pop)))
+						continue;
+					end
+
+					%Find a point of mutation
+					pom = ceil(rand() * length(indAll));
+
+					%Create a new mutated dude
+					temp = pop{i,1};
+					temp(pom) = xor(temp(pom),1);
+					pop{length(pop)+1,1} = temp;
+
+					%Compute fitness
+					indices = indAll.*pop{end,1};
+					indices(indices==0)=[];
+					pop{end,2} = this.crossValidate(xAll(:,indices), yAll);
+				end
+
+				%Cross over
+				disp('Cross Overs');
+				for i = 1:length(pop)
+					%Sex? Y/N
+					if (rand() > crossOverChance*(i/length(pop)))
+						continue;
+					end
+
+					%Find a mate (not myself)
+					j=i;
+					while j==i
+						j = ceil(rand()*length(pop));
+					end
+
+					%Find a point of cross over (Cut after poc)
+					poc = ceil(rand() * (length(indAll)-1));
+
+					%Make babies
+					tempi = pop{i,1};
+					tempj = pop{j,1};
+					temp = [tempi(1:poc) tempj((poc+1):end)];
+					pop{length(pop)+1,1} = temp;
+
+					%Compute fitness
+					indices = indAll.*pop{end,1};
+					indices(indices==0)=[];
+					pop{end,2} = this.crossValidate(xAll(:,indices), yAll);
+				end
+			end
+			save([this.testName '.mat'], 'err');
+		end
+
+		function ret=removeDup(this, pop)
+			dup = zeros(1,length(pop));
+			for i=1:length(pop)
+				if dup(i)
+					continue;
+				end
+
+				for j=i+1:length(pop)
+					if (isequal(pop{i,1},pop{j,1}))
+						dup(j) = 1;
+					end
+				end
+			end
+			ind = (1:length(pop)).*xor(dup,1);
+			ind(ind == 0) = [];
+			ret=pop(ind,:);
+		end
+
+		function totalError = crossValidate(this, xAll, yAll)
 			totalError=0;
 			
 			%For each validation set/point
@@ -41,22 +164,22 @@ classdef test6 < handle
 				label = transpose(predict(obj,x));
 				
 				%Display results
-				disp(['sum: ' num2str(sum(label))]);
-				disp(['actual sum: ' num2str(sum(y))]);
+				%disp(['sum: ' num2str(sum(label))]);
+				%disp(['actual sum: ' num2str(sum(y))]);
 				err=label-y;
 				err=err.*err;
-				disp(['Squared error: ' num2str(sum(err))]);
-				disp(['Mean Squared error: ' num2str(sum(err)/length(err))]);
+				%disp(['Squared error: ' num2str(sum(err))]);
+				%disp(['Mean Squared error: ' num2str(sum(err)/length(err))]);
 				totalError = totalError + sum(err)/length(err);
 				x=(label==y & label==1);
-				disp(['Correct positives: ' num2str(sum(x))]);
+				%disp(['Correct positives: ' num2str(sum(x))]);
 				x=(label==y & label==0);
-				disp(['Correct negatives: ' num2str(sum(x))]);
+				%disp(['Correct negatives: ' num2str(sum(x))]);
 			end
 			totalError = totalError/length(yAll);
 			disp(['Total error: ' num2str(totalError)]);
 
-			save('obj.mat','obj');
+			%save('obj.mat','obj');
 		end
 
 		% @param channels
@@ -83,11 +206,15 @@ classdef test6 < handle
 
 			retX = [];
 			retY = [];
-			for t=1:length(tests)
-				csd=loader.load(tests{t});
+			%for t=1:length(tests)
+				%csd=loader.load(tests{t});
+				csd=loader.load(this.testName);
 
 				if ~csd.isGrating()
-					continue;
+					disp(['Error: test6.generateDataSet(), Not a grating stimulus']);
+					retX=[];
+					retY=[];
+					return;
 				end
 
 				%Cut out the window in time
@@ -100,17 +227,10 @@ classdef test6 < handle
 				top=min(ch);
 				if (top < 1)
 					s=size(csd.data);
-					cat(1,nan(1-top,s(2),s(3)),csd.data);
+					cat(1,nan(1-top,s(2),s(3),s(4)),csd.data);
 					ch = ch - top + 1;
 				end
 				csd.data = csd.data(ch,:,:,:);
-
-				%Cut out the window in trials
-				%if (fValidation)
-				%	csd.data = csd.data(:,:,[1 end],:); %Use the first and last trial for validation
-				%else
-				%	csd.data = csd.data(:,:,2:end-1,:);
-				%end
 
 				%Subdivide time into smaller chunks
 				limit=length(tWindow);
@@ -140,7 +260,7 @@ classdef test6 < handle
 						retY = [retY tempY];
 					end
 				end
-			end
+			%end
 			retX = transpose(retX);
 		end
 

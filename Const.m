@@ -39,8 +39,8 @@ classdef Const
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
 			%ret={'065'};
-			%ret={'044'};
-			ret={'145'};
+			ret={'082'};
+			%ret={'145'};
 			%ret={'044', '048', '065'};
 			%ret={};
 			return;
