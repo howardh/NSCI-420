@@ -39,7 +39,7 @@ classdef Const
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
 			%ret={'065'};
-			ret={'082'};
+			ret={'058'};
 			%ret={'145'};
 			%ret={'044', '048', '065'};
 			%ret={};
@@ -106,19 +106,19 @@ classdef Const
 			switch(expName)
 				case '12mv1211'
 					switch (testName)
-						case '044'
-							%ret=[23 25 27 30];
-							%ret=[23 25];
-							%ret=[21 23 25];
-							ret=[30];
-						case '104'
-							ret=[17];
-						case '132'
-							ret=[12];
-						case '133'
-							ret=[18 22];
-						case '134'
-							ret=[18 22];
+						%case '044'
+						%	%ret=[23 25 27 30];
+						%	%ret=[23 25];
+						%	%ret=[21 23 25];
+						%	ret=[30];
+						%case '104'
+						%	ret=[17];
+						%case '132'
+						%	ret=[12];
+						%case '133'
+						%	ret=[18 22];
+						%case '134'
+						%	ret=[18 22];
 						otherwise
 							ret=[23];
 					end
