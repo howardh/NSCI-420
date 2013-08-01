@@ -74,9 +74,13 @@ classdef test6 < handle
 
 				%Mutation
 				disp('Mutations');
-				for i = 1:length(pop)
+				%for i = 1:length(pop)
+				i=0;
+				while i<length(pop)
+					i=i+1;
+
 					%Am I radioactive?
-					if (rand() > mutationChance*(i/length(pop)))
+					if (rand() > mutationChance*(1-i/length(pop)))
 						continue;
 					end
 
@@ -96,9 +100,13 @@ classdef test6 < handle
 
 				%Cross over
 				disp('Cross Overs');
-				for i = 1:length(pop)
-					%Sex? Y/N
-					if (rand() > crossOverChance*(i/length(pop)))
+				%for i = 1:length(pop)
+				i=0;
+				while i<length(pop)
+					i=i+1;
+
+					%Sex? Y/N (More likely to breed if fitter)
+					if (rand() > crossOverChance*(1-i/length(pop)))
 						continue;
 					end
 
