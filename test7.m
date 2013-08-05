@@ -1,6 +1,7 @@
 classdef test7 < handle
 	properties
 		expName='12mv1211';
+		testName='065';
 
 		figFormat='png';
 	end
@@ -11,7 +12,12 @@ classdef test7 < handle
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
 
-				this.runOnce();
+				tests = Const.ALL_TESTS(this.expName);
+
+				for t=1:length(tests)
+					this.testName = tests{t};
+					this.runOnce();
+				end
 			end
 		end
 
@@ -22,7 +28,10 @@ classdef test7 < handle
 			channelsAbove = 3;
 			totalChannels = 20;
 			t6 = test6;
-			[xAll,yAll]=t6.generateDataSet(channelsAbove,totalChannels,0); %TODO: Should move this out of test 6
+			t6.expName = this.expName;
+			t6.testName = this.testName;
+			%[xAll,yAll]=t6.generateDataSet(channelsAbove,totalChannels,0); %TODO: Should move this out of test 6
+			[xAll,yAll]=t6.generateDataSet([-channelsAbove:-1 1:(totalChannels-channelsAbove)],0);
 
 			s = size(xAll);
 			channels = s(2);
@@ -47,9 +56,9 @@ classdef test7 < handle
 			set(ha, 'YDir', 'reverse');
 			xlabel('Mutual information');
 			ylabel('Channel (Relative to surface)');
-			saveas(h, ['mi.' this.figFormat], this.figFormat);
+			saveas(h, ['mi-' this.testName '.' this.figFormat], this.figFormat);
 
-			save('mi.mat','mi');
+			save(this.testName '.mat','mi');
 		end
 	end
 end
