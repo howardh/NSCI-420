@@ -58,7 +58,7 @@ classdef test7 < handle
 			ylabel('Channel (Relative to surface)');
 			saveas(h, ['mi-' this.testName '.' this.figFormat], this.figFormat);
 
-			save(this.testName '.mat','mi');
+			save([this.testName '.mat'],'mi');
 		end
 	end
 end
