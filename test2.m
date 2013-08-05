@@ -38,10 +38,12 @@ classdef test2
 					for d=1:length(divs)
 						this.timeSubdiv=divs(d);
 						%Every alpha value
-						for a=[0.1 0.05 0.01 0.005 0.001];
+						%for a=[0.1 0.05 0.01 0.005 0.001];
+						for a=[0.05];
 							this.alpha = a;
 							%Perform tests with and without false discovery correction
-							for fdr=[false true]
+							%for fdr=[false true]
+							for fdr=[false]
 								this.fFDR = fdr;
 								isGrating=this.runOnce();
 								%If the current test is not a grating stimulus, skip
@@ -58,8 +60,8 @@ classdef test2
 							break;
 						end
 						%And plot the p values too
-						this.alpha = 0;
-   						this.runOnce();
+						%this.alpha = 0;
+   						%this.runOnce();
 					end
 				end
 			end

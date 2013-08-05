@@ -16,6 +16,7 @@ classdef test6 < handle
 				for t=1:length(tests)
 					this.testName = tests{t};
 					this.runOnce();
+					%this.analyze();
 				end
 			end
 		end
@@ -25,7 +26,7 @@ classdef test6 < handle
 			cdforce(dir);
 
 			%Generate data
-			channels = [-3:-1 1:20];
+			channels = [-5:-1 1:30];
 			[xAll,yAll]=this.generateDataSet(channels,0); %Entire data set
 
 			%Computations (Genetic algorithm)
@@ -287,6 +288,10 @@ classdef test6 < handle
 			%xAll = [1 2 3; 2 3 4; 3 4 5; 8 9 10; 9 10 11; 5 6 7; 4 5 6; 6 7 8; 7 8 9; 10 11 12];
 			%xAll = xAll + (rand(size(xAll))-0.5)/100
 			%yAll = [0 0 0 1 1 0 0 1 1 1];
+			if isempty(xAll) | isempty(yAll)
+				disp('Not grating');
+				return;
+			end
 
 			size(xAll)
 			size(yAll)
@@ -322,13 +327,13 @@ classdef test6 < handle
 			covAll = (cov(xAll));
 
 			s0=0;
-			for i=1:length(x0)
+			for i=1:size(x0,1)
 				s0 = s0 + (x0(i,:)-mu0)'*(x0(i,:)-mu0);
 			end
 			%s0
 
 			s1=0;
-			for i=1:length(x1)
+			for i=1:size(x1,1)
 				s1 = s1 + (x1(i,:)-mu1)'*(x1(i,:)-mu1);
 			end
 			%s1
@@ -374,12 +379,14 @@ classdef test6 < handle
 
 			hs=subplot(1,3,1);
 			barh(fisherScore(:,1),log(fisherScore(:,2)/min(fisherScore(:,2))));
+			hold on; showLayers();
 			set(hs, 'YDir', 'reverse');
 			title({'Separation', '(divided by min, log transformed)'});
 			ylabel('Channel (relative to surface)');
 
 			hs=subplot(1,3,2);
 			barh(fisherScore(:,1),fisherScore(:,3));
+			hold on; showLayers();
 			set(hs, 'YDir', 'reverse');
 			title('Fisher Score');
 
@@ -387,13 +394,14 @@ classdef test6 < handle
 			barh(fisherScore(:,1),fisherScore(:,4));
 			hold on;
 			hb=barh(fisherScore(:,1),-fisherScore(:,4));
+			hold on; showLayers();
 			set(hs, 'YDir', 'reverse');
 			set(hb, 'facecolor', [1 1 1]);
 			set(hb, 'edgecolor', [1 1 1]*0.75);
 			title('Weight');
 
 			%pwd
-			saveas(h,['fisher' '.' this.figFormat], this.figFormat);
+			saveas(h,['fisher-' this.testName '.' this.figFormat], this.figFormat);
 		end
 
 	end

@@ -125,8 +125,12 @@ function createImages()
 						colorbar;
 
 						subplot(2,1,2); 
-						output=squeeze(mean(output,2));
-						plot(1:length(output),output);
+						%output=squeeze(mean(output,2));
+						%plot(1:length(output),output);
+						y=squeeze(mean(csd.data(ch,[1000:1200],:,:),2));
+						e=std(y,0,1);
+						y=squeeze(mean(output,2));
+						errorbar(1:length(y),y,e);
 						ylabel('CSD');
 						xlabel('Condition');
 

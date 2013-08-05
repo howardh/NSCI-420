@@ -43,6 +43,7 @@ classdef test7 < handle
 			set(h,'visible','off');
 			ha=axes;
 			barh(mi(:,1),mi(:,2));
+			hold on; showLayers();
 			set(ha, 'YDir', 'reverse');
 			xlabel('Mutual information');
 			ylabel('Channel (Relative to surface)');
