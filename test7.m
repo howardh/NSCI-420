@@ -32,6 +32,9 @@ classdef test7 < handle
 			t6.testName = this.testName;
 			%[xAll,yAll]=t6.generateDataSet(channelsAbove,totalChannels,0); %TODO: Should move this out of test 6
 			[xAll,yAll]=t6.generateDataSet([-channelsAbove:-1 1:(totalChannels-channelsAbove)],0);
+			if (isempty(xAll) | isempty(yAll))
+				return;
+			end
 
 			s = size(xAll);
 			channels = s(2);
