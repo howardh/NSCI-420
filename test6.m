@@ -16,6 +16,7 @@ classdef test6 < handle
 				for t=1:length(tests)
 					this.testName = tests{t};
 					this.runOnce();
+					this.createImages();
 					%this.analyze();
 				end
 			end
@@ -26,8 +27,12 @@ classdef test6 < handle
 			cdforce(dir);
 
 			%Generate data
-			channels = [-5:-1 1:30];
+			%channels = [-5:-1 1:30];
+			channels = [-3:-1 1:20];
 			[xAll,yAll]=this.generateDataSet(channels,0); %Entire data set
+			if (isempty(xAll) | isempty(yAll))
+				return;
+			end
 
 			%Computations (Genetic algorithm)
 			indAll = [1:length(channels)];
@@ -36,6 +41,11 @@ classdef test6 < handle
 			mutationChance = 1;
 			crossOverChance = 1;
 			pop={}; %pop{:,1} = gene, pop{:,2} = fitness (smaller = better)
+
+			if exist(['pop-' this.testName '.mat'])
+				disp(['GA already run before. Loading from file.']);
+				load(['pop-' this.testName '.mat']);
+			end
 
 			%Initialize population
 			for i=1:popSize
@@ -47,13 +57,15 @@ classdef test6 < handle
 				%Get channels
 				indices = indAll.*pop{i,1};
 				indices(indices==0)=[];
+				pop{i,3} = indices;
 
 				%Compute fitness
 				pop{i,2} = this.crossValidate(xAll(:,indices), yAll);
 			end
 
 			%Run GA
-			while 1
+			%while 1
+			for count=1:10
 				%Sort population based on fitness
 				[Y,I] = sort(cell2mat(pop(:,2)));
 				pop = pop(I,:);
@@ -68,9 +80,10 @@ classdef test6 < handle
 				%Display results so far
 				pop
 				for i=1:3
-					indices = indAll.*pop{i,1};
-					indices(indices==0)=[];
-					channels(indices)
+					%indices = indAll.*pop{i,1};
+					%indices(indices==0)=[];
+					%channels(indices)
+					channels(pop{i,3})
 				end
 
 				%Mutation
@@ -96,6 +109,7 @@ classdef test6 < handle
 					%Compute fitness
 					indices = indAll.*pop{end,1};
 					indices(indices==0)=[];
+					pop{end,3} = indices;
 					pop{end,2} = this.crossValidate(xAll(:,indices), yAll);
 				end
 
@@ -129,10 +143,12 @@ classdef test6 < handle
 					%Compute fitness
 					indices = indAll.*pop{end,1};
 					indices(indices==0)=[];
+					pop{end,3} = indices;
 					pop{end,2} = this.crossValidate(xAll(:,indices), yAll);
 				end
 			end
-			save([this.testName '.mat'], 'err');
+			save(['pop-' this.testName '.mat'],'pop');
+			%save([this.testName '.mat'], 'err');
 		end
 
 		function ret=removeDup(this, pop)
@@ -191,6 +207,37 @@ classdef test6 < handle
 			%save('obj.mat','obj');
 		end
 
+		function createImages(this, pop)
+			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
+			cdforce(dir);
+
+			if nargin == 1
+				if exist(['pop-' this.testName '.mat'])
+					load(['pop-' this.testName '.mat']);
+				else
+					return;
+				end
+			end
+
+			pop
+
+			output=[];
+			xlabel={};
+			for i=1:length(pop)
+				output = [output pop{i,1}'];
+				xlabel{i} = num2str(pop{i,2});
+			end
+			h=figure;
+			set(h,'Visible','off');
+			imagesc([1 length(pop)], [-3 19], output);
+			hold on; showLayers();
+			title([num2str(pop{1,2}) '-' num2str(pop{end,2})]);
+			%set(gca, 'xticklabel', xlabel);
+			set(gca, 'ytick', [-3:-1 1:20]);
+			saveas(gca, [this.testName '.' this.figFormat], this.figFormat);
+			close(h);
+		end
+
 		% @param channels
 		%		Channels to use, relative to the surface of the brain (surface is 0 and does not represent a channel)
 		%		If there isn't enough data, the matrix will be padded by NaN
@@ -233,13 +280,16 @@ classdef test6 < handle
 
 				%Cut out the window in channels
 				ch = channels + csd.alignment.firstChannel;
-				top=min(ch);
-				if (top < 1)
-					s=size(csd.data);
-					cat(1,nan(1-top,s(2),s(3),s(4)),csd.data);
-					ch = ch - top + 1;
-				end
+				ch(ch<1 | ch>size(csd.data,1)) = [];
 				csd.data = csd.data(ch,:,:,:);
+				%ch = channels + csd.alignment.firstChannel;
+				%top=min(ch);
+				%if (top < 1)
+				%	s=size(csd.data);
+				%	cat(1,nan(1-top,s(2),s(3),s(4)),csd.data);
+				%	ch = ch - top + 1;
+				%end
+				%csd.data = csd.data(ch,:,:,:);
 
 				%Subdivide time into smaller chunks
 				limit=length(tWindow);
