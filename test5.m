@@ -66,6 +66,18 @@ classdef test5 < handle
 			ch2=interp1(t,ch,t2,'linear');
 			ch2=round(ch2);
 
+			%Exceptions (Hard code values we know here)
+			switch (this.expName)
+				case '12mv1211'
+					excep = [065 5];
+				otherwise
+					excep = [];
+			end
+			for i=1:size(excep,1)
+				ind=find(t2==excep(i,1));
+				ch2(ind) = excep(i,2);
+			end
+
 			%Extract the values we need to be returned
 			ret=[];
 			i=1;

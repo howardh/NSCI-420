@@ -157,11 +157,19 @@ classdef test4 < handle
 
 		%CSD Window (alignment) viewer
 		%run() must be called first.
-		function alignmentViewer(this)
+		function alignmentViewer(this, fSave)
+			if (nargin == 1)
+				fSave = false;
+			end
+
 			dir=[Const.RESULT_DIRECTORY pathname(class(this), this.expName, 'Covariance')];
 			cd(dir);
 
 			load('results.mat');
+			if ~results.isKey(this.testName)
+				disp('Not CSD mapping');
+				return;
+			end
 			csda = results(this.testName);
 
 			loader=CSDLoader;
@@ -170,8 +178,12 @@ classdef test4 < handle
 			csd.data = mean(csd.data, 3);
 			csd.data=csd.data(:,1000:1200,:,:);
 
-			figure;
+			h=figure;
+			if (fSave)
+				set(h,'Visible','off');
+			end
 			imagesc(csd.data, [-45 45]);
+			hold on; showLayers(csd);
 			colorbar;
 			title([csd.testName ' - ' csd.stimulusObject.TextureType]);
 			xlabel('Time (ms)');
@@ -182,6 +194,21 @@ classdef test4 < handle
 					csda.tWindow(end)-csda.tWindow(1) ...
 					csda.chWindow(end)-csda.chWindow(1)];
 			rectangle('position',rect+[-.5 -.5 0 0],'LineWidth',2);
+			if (fSave)
+				saveas(h, [this.testName '.' this.figFormat], this.figFormat);
+			end
+		end
+
+		function createAlignmentImages(this)
+			for en=1:length(Const.ALL_EXPERIMENTS)
+				this.expName = Const.ALL_EXPERIMENTS{en};
+				testNames=Const.ALL_TESTS(this.expName);
+
+				for t=1:length(testNames)
+					this.testName = testNames{t};
+					this.alignmentViewer(1);
+				end
+			end
 		end
 	end
 	methods (Access = private)

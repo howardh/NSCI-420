@@ -37,9 +37,9 @@ classdef test6 < handle
 			%Computations (Genetic algorithm)
 			indAll = [1:length(channels)];
 
-			popSize = 15;
-			mutationChance = 1;
-			crossOverChance = 1;
+			popSize = 25;
+			mutationChance = 0.5;
+			crossOverChance = 0.5;
 			pop={}; %pop{:,1} = gene, pop{:,2} = fitness (smaller = better)
 
 			if exist(['pop-' this.testName '.mat'])
@@ -48,7 +48,7 @@ classdef test6 < handle
 			end
 
 			%Initialize population
-			for i=1:popSize
+			for i=(1:popSize)+size(pop,1)
 				temp = rand(1,length(indAll));
 				temp(temp < 0.5) = 0;
 				temp(temp ~= 0) = 1;
@@ -66,26 +66,6 @@ classdef test6 < handle
 			%Run GA
 			%while 1
 			for count=1:10
-				%Sort population based on fitness
-				[Y,I] = sort(cell2mat(pop(:,2)));
-				pop = pop(I,:);
-
-				%Remove duplicates
-				pop=this.removeDup(pop);
-
-				%Cut down population
-				m=min(length(pop),popSize);
-				pop = pop(1:m, :);
-
-				%Display results so far
-				pop
-				for i=1:3
-					%indices = indAll.*pop{i,1};
-					%indices(indices==0)=[];
-					%channels(indices)
-					channels(pop{i,3})
-				end
-
 				%Mutation
 				disp('Mutations');
 				%for i = 1:length(pop)
@@ -146,6 +126,26 @@ classdef test6 < handle
 					pop{end,3} = indices;
 					pop{end,2} = this.crossValidate(xAll(:,indices), yAll);
 				end
+
+				%Sort population based on fitness
+				[Y,I] = sort(cell2mat(pop(:,2)));
+				pop = pop(I,:);
+
+				%Remove duplicates
+				pop=this.removeDup(pop);
+
+				%Cut down population
+				m=min(length(pop),popSize);
+				pop = pop(1:m, :);
+
+				%Display results so far
+				pop
+				%for i=1:3
+				%	%indices = indAll.*pop{i,1};
+				%	%indices(indices==0)=[];
+				%	%channels(indices)
+				%	channels(pop{i,3})
+				%end
 			end
 			save(['pop-' this.testName '.mat'],'pop');
 			%save([this.testName '.mat'], 'err');
@@ -221,19 +221,36 @@ classdef test6 < handle
 
 			pop
 
+			h=figure;
+			set(h,'Visible','off');
+
 			output=[];
 			xlabel={};
 			for i=1:length(pop)
 				output = [output pop{i,1}'];
 				xlabel{i} = num2str(pop{i,2});
 			end
-			h=figure;
-			set(h,'Visible','off');
-			imagesc([1 length(pop)], [-3 19], output);
+			subplot(1,4,[1:3]);
+			imagesc([1 length(pop)], [-2 20], output);
 			hold on; showLayers();
+			colorbar;
 			title([num2str(pop{1,2}) '-' num2str(pop{end,2})]);
 			%set(gca, 'xticklabel', xlabel);
-			set(gca, 'ytick', [-3:-1 1:20]);
+			set(gca, 'ytick', [1:20]);
+
+			output=0;
+			xlabel={};
+			for i=1:length(pop)
+				output = output + pop{i,1}'*(1-pop{i,2});
+				xlabel{i} = num2str(pop{i,2});
+			end
+			hs=subplot(1,4,4);
+			barh([1:length(output)],output);
+			hold on; showLayers();
+			set(hs, 'YDir', 'reverse');
+			%title({'Separation', '(divided by min, log transformed)'});
+			%ylabel('Channel (relative to surface)');
+
 			saveas(gca, [this.testName '.' this.figFormat], this.figFormat);
 			close(h);
 		end

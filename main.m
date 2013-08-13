@@ -31,6 +31,7 @@ function ret=main()
 	%run('test8');
 	%run('test2');
 	run('test6');
+	%run('test5');
 
 	%createImages();
 
