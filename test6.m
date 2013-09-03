@@ -15,7 +15,7 @@ classdef test6 < handle
 
 				for t=1:length(tests)
 					this.testName = tests{t};
-					this.runOnce();
+					%this.runOnce();
 					this.createImages();
 					%this.analyze();
 				end
@@ -29,7 +29,7 @@ classdef test6 < handle
 			%Generate data
 			%channels = [-5:-1 1:30];
 			channels = [-3:-1 1:20];
-			[xAll,yAll]=this.generateDataSet(channels,0); %Entire data set
+			[xAll,yAll,channels]=this.generateDataSet(channels,0); %Entire data set
 			if (isempty(xAll) | isempty(yAll))
 				return;
 			end
@@ -65,7 +65,7 @@ classdef test6 < handle
 
 			%Run GA
 			%while 1
-			for count=1:10
+			for count=1:1
 				%Mutation
 				disp('Mutations');
 				%for i = 1:length(pop)
@@ -147,7 +147,7 @@ classdef test6 < handle
 				%	channels(pop{i,3})
 				%end
 			end
-			save(['pop-' this.testName '.mat'],'pop');
+			save(['pop-' this.testName '.mat'],'pop','channels');
 			%save([this.testName '.mat'], 'err');
 		end
 
@@ -211,16 +211,22 @@ classdef test6 < handle
 			dir = [Const.RESULT_DIRECTORY pathname(class(this), this.expName) ];
 			cdforce(dir);
 
+			%Load the population
 			if nargin == 1
 				if exist(['pop-' this.testName '.mat'])
 					load(['pop-' this.testName '.mat']);
 				else
 					return;
 				end
+			else
+				assert(1==0, 'ERROR: channels variable unavailable. Should be passed as an argument.');
 			end
 
+			%Display loaded variables
+			channels
 			pop
 
+			%Create figures
 			h=figure;
 			set(h,'Visible','off');
 
@@ -231,12 +237,15 @@ classdef test6 < handle
 				xlabel{i} = num2str(pop{i,2});
 			end
 			subplot(1,4,[1:3]);
-			imagesc([1 length(pop)], [-2 20], output);
+			%imagesc([1 length(pop)], [-2 20], output);
+			ch = channels;
+			ch(ch < 0) = ch(ch < 0) + 1;
+			imagesc([1 length(pop)], channels, output);
 			hold on; showLayers();
 			colorbar;
 			title([num2str(pop{1,2}) '-' num2str(pop{end,2})]);
 			%set(gca, 'xticklabel', xlabel);
-			set(gca, 'ytick', [1:20]);
+			set(gca, 'ytick', [1:channels(end)]);
 
 			output=0;
 			xlabel={};
@@ -245,7 +254,10 @@ classdef test6 < handle
 				xlabel{i} = num2str(pop{i,2});
 			end
 			hs=subplot(1,4,4);
-			barh([1:length(output)],output);
+			%barh([1:length(output)],output);
+			%barh([-2:20],output);
+			barh(channels,output);
+			set(gca, 'ytick', [1:channels(end)]);
 			hold on; showLayers();
 			set(hs, 'YDir', 'reverse');
 			%title({'Separation', '(divided by min, log transformed)'});
@@ -261,7 +273,7 @@ classdef test6 < handle
 		% @param fValidation
 		%		Booleam value
 		%		If true, creates the validation set. Otherwise, creates the training set.
-		function [retX,retY]=generateDataSet(this, channels, fValidation)
+		function [retX,retY,retCh]=generateDataSet(this, channels, fValidation)
 			%Default arguments
 			if nargin == 1
 				channels = [-2 -1 1:16];
@@ -271,72 +283,66 @@ classdef test6 < handle
 			channels(channels < 0) = channels(channels < 0) + 1;
 			channels = channels-1;
 
-			tests = Const.ALL_TESTS(this.expName);
-			%tests = {'all'};
-
+			%Load shit
 			loader=CSDLoader;
 			loader.expName = this.expName;
 
+			%Initialize, in case we need to return early
 			retX = [];
 			retY = [];
-			%for t=1:length(tests)
-				%csd=loader.load(tests{t});
-				csd=loader.load(this.testName);
+			retCh = [];
+			csd=loader.load(this.testName);
 
-				if ~csd.isGrating()
-					disp(['Error: test6.generateDataSet(), Not a grating stimulus']);
-					retX=[];
-					retY=[];
-					return;
+			if ~csd.isGrating()
+				disp(['Error: test6.generateDataSet(), Not a grating stimulus']);
+				retX=[];
+				retY=[];
+				return;
+			end
+
+			%Cut out the window in time
+			tWindow=1000+40:1200-120;
+			csd.data = csd.avgConditions();
+			csd.data = csd.data(:,tWindow,:,:);
+
+			%Cut out the window in channels
+			ch = channels + csd.alignment.firstChannel;
+			ch(ch<1 | ch>size(csd.data,1)) = [];
+			csd.data = csd.data(ch,:,:,:);
+			%Save this window for returning
+			retCh = ch;
+			retCh = retCh - csd.alignment.firstChannel;
+			retCh(retCh <= 0) = retCh(retCh <= 0) - 1;
+
+			%Subdivide time into smaller chunks
+			limit=length(tWindow);
+			div=length(tWindow); %parameter (Size of time subdivisions)
+			inc=div;
+			tWindow=[1:div];
+			temp=[];
+			while (tWindow(end) <= limit)
+				temp = cat(1,temp,csd.data(:,tWindow,:,:));
+				tWindow = tWindow + inc;
+			end
+
+			%Average over time
+			temp=squeeze(mean(temp,2));
+
+			s = size(temp); % channels x trials x 8
+
+			po = csd.getPrefOrientation();	%Prefered orientation
+			npo = mod(po+4-1,8)+1;			%Non-prefered orientation
+			for trial=1:s(2)
+				for cond=[po npo]
+					%tempX = squeeze(csd.data(:,trial,cond));
+					tempX = squeeze(temp(:,trial,cond));
+					tempY = (cond == po);
+
+					retX = cat(2,retX, tempX);
+					retY = [retY tempY];
 				end
+			end
 
-				%Cut out the window in time
-				tWindow=1000+40:1200-120;
-				csd.data = csd.avgConditions();
-				csd.data = csd.data(:,tWindow,:,:);
-
-				%Cut out the window in channels
-				ch = channels + csd.alignment.firstChannel;
-				ch(ch<1 | ch>size(csd.data,1)) = [];
-				csd.data = csd.data(ch,:,:,:);
-				%ch = channels + csd.alignment.firstChannel;
-				%top=min(ch);
-				%if (top < 1)
-				%	s=size(csd.data);
-				%	cat(1,nan(1-top,s(2),s(3),s(4)),csd.data);
-				%	ch = ch - top + 1;
-				%end
-				%csd.data = csd.data(ch,:,:,:);
-
-				%Subdivide time into smaller chunks
-				limit=length(tWindow);
-				div=length(tWindow); %parameter (Size of time subdivisions)
-				inc=div;
-				tWindow=[1:div];
-				temp=[];
-				while (tWindow(end) <= limit)
-					temp = cat(1,temp,csd.data(:,tWindow,:,:));
-					tWindow = tWindow + inc;
-				end
-
-				%Average over time
-				temp=squeeze(mean(temp,2));
-
-				s = size(temp); % channels x trials x 8
-
-				po = csd.getPrefOrientation();	%Prefered orientation
-				npo = mod(po+4-1,8)+1;			%Non-prefered orientation
-				for trial=1:s(2)
-					for cond=[po npo]
-						%tempX = squeeze(csd.data(:,trial,cond));
-						tempX = squeeze(temp(:,trial,cond));
-						tempY = (cond == po);
-
-						retX = cat(2,retX, tempX);
-						retY = [retY tempY];
-					end
-				end
-			%end
 			retX = transpose(retX);
 		end
 
