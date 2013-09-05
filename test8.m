@@ -60,6 +60,8 @@ classdef test8 < handle
 			disp(['Rejected']);
 		end
 
+		% @param csd
+		%	CSDData object
 		% @return
 		%	true (1)  - if the CSD is well tuned (tuning curve is good)
 		%	false (0) - if it is not well tuned
@@ -164,6 +166,8 @@ classdef test8 < handle
 			%title('CSD 1');
 		end
 
+		% @returns
+		%	A vector containing the circular variance of each channel
 		function ret=circularVariance(this,data,fMean)
 			channels=32;
 			conditions=8;

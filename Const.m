@@ -1,25 +1,14 @@
 %Class containing constants used in the scripts
 classdef Const
 	properties (Constant)
-		%%SCRIPT_DIRECTORY =	'\\132.216.58.64\f\SummerStudents\Howard\Scripts';
-		%SCRIPT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Scripts\';
-		%DATA_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\CSDData\';
-		%FIGURE_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Figures\';
-		%RESULT_DIRECTORY =	'C:\Users\labuser 2\Documents\MATLAB\Results\';
-
 		SCRIPT_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Scripts')];
 		DATA_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('CSDData')];
-		FIGURE_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Figures')];
+		FIGURE_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Figures')]; %FIXME: Unused
 		RESULT_DIRECTORY =	[Const.ROOT_DIRECTORY pathname('Results')];
 
 		ALIGNMENT_DIRECTORY = [Const.DATA_DIRECTORY pathname('test4')];
 
-		MI_DIRECTORY = [Const.ROOT_DIRECTORY pathname('mi')];
-
-		%SCRIPT_DIRECTORY =	'~/Documents/MATLAB/Scripts/';
-		%DATA_DIRECTORY =	'~/Documents/MATLAB/CSDData/';
-		%FIGURE_DIRECTORY =	'~/Documents/MATLAB/Figures/';
-		%RESULT_DIRECTORY =	'~/Documents/MATLAB/Results/';
+		MI_DIRECTORY = [Const.ROOT_DIRECTORY pathname('mi')]; %Mutual information package directory
 
 		%TODO: A list of all experiment names
 		ALL_EXPERIMENTS = {'12mv1211'};
@@ -38,12 +27,12 @@ classdef Const
 		end
 		function ret=ALL_TESTS(expName)
 			%FIXME: Temporary, for debugging purposes
-			%ret={'065'};
-			ret={'082'};
+			ret={'065'};
+			%ret={'082'};
 			%ret={'145'};
 			%ret={'044', '048', '065'};
 			%ret={};
-			return;
+			%return;
 			%Actual function starts here
 			if strcmp(expName, '12mv1211')
 				%TODO: Removed 034, 059, 066, 074, 075, 086, 088, 091, 092, 093, 094, 096, 105, 113, 115, 125, 138, 146. Don't know why it won't load.
@@ -92,7 +81,8 @@ classdef Const
 			switch expName
 				case '12mv1211'
 					%  1  2  3  4  5  6  7   8   9   10  11  12
-					x=[45,54,54,61,68,83,101,109,119,132,141,148];
+					x=[45,54,54,61,68,83,101,109,119,119,141,148];
+					%x=[45,54,54,61,68,83,101,109,119,132,141,148];
 			end
 
 			tn=str2num(testName);

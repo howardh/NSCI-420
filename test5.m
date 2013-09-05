@@ -62,11 +62,18 @@ classdef test5 < handle
 				t2 = [t2 str2num(tests{i})];
 			end
 
+			%If there are no runs with grating stimuli to align, then skip
+			if isequal(t,t2)
+				ret=[];
+				return;
+			end
+
 			%Compute missing values
 			ch2=interp1(t,ch,t2,'linear');
 			ch2=round(ch2);
 
 			%Exceptions (Hard code values we know here)
+			%List as a 2D matrix. First value is the test name, second is the first channel.
 			switch (this.expName)
 				case '12mv1211'
 					excep = [065 5];

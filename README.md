@@ -1,5 +1,28 @@
 # NSCI-420
 
+## main.m
+
+* main()
+* runAll()
+	* Runs everything in the correct order.
+	* Note: Some intermediate images (such as the graphical representation of circular variance) are not generated through this function.
+
+## Const.m
+
+* Contents:
+	* A list of all experiments, insertions, and tests
+		* Const.ALL_EXPERIMENTS
+		* Const.ALL_TESTS
+		* Const.ALL_INSERTIONS
+	* All directories in which scripts and their outputs reside
+		* Const.ROOT_DIRECTORY
+		* Const.SCRIPT_DIRECTORY
+		* Const.DATA_DIRECTORY
+		* Const.RESULT_DIRECTORY
+		* Const.ALIGNMENT_DIRECTORY
+	* A list of bad channels for each experiment
+		* Const.BAD_CHANNELS
+
 ## Test1
 
 * Statistical analysis
@@ -14,12 +37,7 @@
 
 ## Test3
 
-* Incomplete/wrong
-* Same as test2, but with a paired sample t-test
-	* Every trials from one test is compared to every trial of another
-	* Times can be matched to one another, but what about trials?
-* Files generated:
-	* ...
+* Ignore
 
 ## Test4
 
@@ -58,20 +76,25 @@
 * Files generated:
 	* results.mat (test5/expName/Covariance/)
 	* Plot for each insertion (test5/expName/)
+* Alignments can be manually inputted in the runOnce() function (search for "Exceptions" in the comments to find it)
+	* 
+* Note: Once Test5 has been run, the alignment needs to be reloaded into the CSD Data files. Set CSDLoader.fReloadAlignment=1 and then reload using convertAllData() in main.m.
 
-## Test 6 (Fisher)
+## Test 6 (Genetic algorithm, Fisher)
 
 * Requires having run Test5 first (Uses the alignment data)
-* Creates a training set from all available grating stimuli runs
-	* Classification: 1 for prefered orientation, 0 for non-prefered orientation
-* Takes ? channels above the brain surface, and ? channels within.
+* Searches for sets of channels which give the best performance when used in Fisher linear discriminant analysis.
 * Outputs:
-	* Fisher linear discriminant training error and validation error
-* Misc methods (TODO: These methods do not belong here)
-	* evaluateTuningCurve
-		* Input: CSDData
-		* Output: True if the data is well tuned, and false otherwise
-	* circularVariance
+	* Images representing the best selection of channels found
+	* The same data represented in a mat file
+		* pop{i,1} = the gene representation
+		* pop{i,2} = fitness (i.e. Error rate from cross validation using Fisher linear discriminant)
+		* channels = Channels from which the subsets were taken.
+* generateDataSet()
+	* Creates a training set from all available grating stimuli runs
+	* Classification: 1 for prefered orientation, 0 for non-prefered orientation
+* analyze()
+	* Outputs: image containing three figures (separation, Fisher score, weights)
 
 ## Test 7 (Mutual Information)
 
@@ -80,4 +103,10 @@
 
 ## Test 8
 
-* Finds all tests that are well tuned
+* Unused
+* Finds all tests that are well tuned, and puts them together in a test named "all".
+* evaluateTuningCurve
+	* Input: CSDData
+	* Output: True if the data is well tuned, and false otherwise
+* viewCircVariance
+	* Output: an image representing the circular variances of each channel

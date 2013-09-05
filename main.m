@@ -30,10 +30,10 @@ function ret=main()
 
 	%run('test8');
 	%run('test2');
-	run('test6');
+	%run('test6');
 	%run('test5');
 
-	%createImages();
+	createImages();
 
 	%runAll();
 end
@@ -187,14 +187,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	Data conversion (To my own format)
 
-function convertAllData()
+function convertAllData(loader)
 	for e=1:length(Const.ALL_EXPERIMENTS);
 		expName=Const.ALL_EXPERIMENTS{e};
 		x=Const.ALL_TESTS(expName);
 		for i=1:length(x)
 			disp(['Converting test ' x{i}]);
 			try
-				convertData(expName,x{i});
+				if (nargin == 1)
+					convertData(expName,x{i},loader);
+				else
+					convertData(expName,x{i});
+				end
 			catch exception
 				disp(' some error occurred');
 				disp(getReport(exception));
@@ -204,8 +208,10 @@ function convertAllData()
 	end
 end
 
-function ret=convertData(experiment, testName)
-	loader=CSDLoader;
+function ret=convertData(experiment, testName, loader)
+	if (nargin == 2)
+		loader=CSDLoader;
+	end
 	loader.expName=experiment;
 	csd=loader.load(testName);
 	csd.save();
@@ -220,7 +226,11 @@ function ret=runAll()
 	createImages();
 	run('test1');
 	run('test2');
-	run('test3');
 	run('test4');
 	run('test5');
+	loader=CSDLoader;
+	loader.fReloadAlignment = 1;
+	convertAllData(loader);
+	run('test6');
+	run('test8');
 end

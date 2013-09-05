@@ -6,12 +6,15 @@ function listTests(ExpName)
 		ExpName= '12mv1211';
 	end
 
-	for i = 10:148
-		if i < 100;
-			TestName = ['0' int2str(i)];
-		else
-			TestName = [int2str(i)];
-		end
+	%for i = 10:148
+	%	if i < 100;
+	%		TestName = ['0' int2str(i)];
+	%	else
+	%		TestName = [int2str(i)];
+	%	end
+	tests = Const.ALL_TESTS(ExpName);
+	for i=1:length(tests)
+		TestName = tests{i};
 		
 		% DataFolder
 		DataFolder =['\\132.216.58.64\f\Martin\' ExpName '\Electro\Analyzed Data\'];

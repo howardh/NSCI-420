@@ -4,10 +4,17 @@ classdef test6 < handle
 		testName='065';
 
 		figFormat='png';
+
+		%Parameters
+		iterations = 10;
+		popSize = 50;
+		mutationChance = 0.5;
+		crossOverChance = 0.5;
 	end
 	methods
 		%Runs everything
 		function run(this)
+			while 1
 			for en=1:length(Const.ALL_EXPERIMENTS)
 				this.expName = Const.ALL_EXPERIMENTS{en};
 
@@ -15,10 +22,11 @@ classdef test6 < handle
 
 				for t=1:length(tests)
 					this.testName = tests{t};
-					%this.runOnce();
+					this.runOnce();
 					this.createImages();
 					%this.analyze();
 				end
+			end
 			end
 		end
 
@@ -29,17 +37,15 @@ classdef test6 < handle
 			%Generate data
 			%channels = [-5:-1 1:30];
 			channels = [-3:-1 1:20];
-			[xAll,yAll,channels]=this.generateDataSet(channels,0); %Entire data set
+			[xAll,yAll,channels2]=this.generateDataSet(channels,0); %Entire data set
+			disp('After generateDataSet()');
 			if (isempty(xAll) | isempty(yAll))
 				return;
 			end
 
 			%Computations (Genetic algorithm)
-			indAll = [1:length(channels)];
+			indAll = [1:length(channels2)];
 
-			popSize = 25;
-			mutationChance = 0.5;
-			crossOverChance = 0.5;
 			pop={}; %pop{:,1} = gene, pop{:,2} = fitness (smaller = better)
 
 			if exist(['pop-' this.testName '.mat'])
@@ -47,8 +53,13 @@ classdef test6 < handle
 				load(['pop-' this.testName '.mat']);
 			end
 
+			if ~isequal(channels,channels2)
+				disp('WARNING: channels != channels2. Updating channels.');
+				channels=channels2;
+			end
+
 			%Initialize population
-			for i=(1:popSize)+size(pop,1)
+			for i=(1:this.popSize)+size(pop,1)
 				temp = rand(1,length(indAll));
 				temp(temp < 0.5) = 0;
 				temp(temp ~= 0) = 1;
@@ -65,7 +76,7 @@ classdef test6 < handle
 
 			%Run GA
 			%while 1
-			for count=1:1
+			for count=1:this.iterations
 				%Mutation
 				disp('Mutations');
 				%for i = 1:length(pop)
@@ -74,7 +85,7 @@ classdef test6 < handle
 					i=i+1;
 
 					%Am I radioactive?
-					if (rand() > mutationChance*(1-i/length(pop)))
+					if (rand() > this.mutationChance*(1-i/length(pop)))
 						continue;
 					end
 
@@ -101,7 +112,7 @@ classdef test6 < handle
 					i=i+1;
 
 					%Sex? Y/N (More likely to breed if fitter)
-					if (rand() > crossOverChance*(1-i/length(pop)))
+					if (rand() > this.crossOverChance*(1-i/length(pop)))
 						continue;
 					end
 
@@ -135,7 +146,7 @@ classdef test6 < handle
 				pop=this.removeDup(pop);
 
 				%Cut down population
-				m=min(length(pop),popSize);
+				m=min(length(pop),this.popSize);
 				pop = pop(1:m, :);
 
 				%Display results so far
@@ -147,6 +158,7 @@ classdef test6 < handle
 				%	channels(pop{i,3})
 				%end
 			end
+			disp('Just before saving: ');
 			save(['pop-' this.testName '.mat'],'pop','channels');
 			%save([this.testName '.mat'], 'err');
 		end
@@ -240,7 +252,7 @@ classdef test6 < handle
 			%imagesc([1 length(pop)], [-2 20], output);
 			ch = channels;
 			ch(ch < 0) = ch(ch < 0) + 1;
-			imagesc([1 length(pop)], channels, output);
+			imagesc([1 length(pop)], ch, output);
 			hold on; showLayers();
 			colorbar;
 			title([num2str(pop{1,2}) '-' num2str(pop{end,2})]);
@@ -311,7 +323,7 @@ classdef test6 < handle
 			csd.data = csd.data(ch,:,:,:);
 			%Save this window for returning
 			retCh = ch;
-			retCh = retCh - csd.alignment.firstChannel;
+			retCh = retCh - csd.alignment.firstChannel + 1;
 			retCh(retCh <= 0) = retCh(retCh <= 0) - 1;
 
 			%Subdivide time into smaller chunks
